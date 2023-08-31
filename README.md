@@ -19,10 +19,14 @@ Recorrido --> "1..*" Parada
 Parada --> "1..*" Atractivo
 
     class Recorrido{
+        -String color
         -int duracion_aproximada
-        -int hora_inicio
-        -int hora_finalizacion
+        -datetime hora_inicio_estimada
+        -datetime hora_finalizacion_estimada
+        -int frecuencia
+        +definirOrdenParadas()
     }
+    
 
     note for Recorrido "Ver como hacer con el orden de las paradas"
 
@@ -31,7 +35,10 @@ Parada --> "1..*" Atractivo
         -String direccion
         -String descripcion
         -String foto
+        -ArrayList<Atractivo> atractivosCercanos 
+        +conocerAtracciones()
     }
+ 
 
     class Atractivo{
         -String nombre
@@ -40,7 +47,7 @@ Parada --> "1..*" Atractivo
 
     class Bus{
         -String patente
-        -int num_patente
+        -int num_unidad
         -datetime fecha_compra
         -Estado estado
         +conocer_estado()
@@ -59,6 +66,7 @@ Parada --> "1..*" Atractivo
 
     class Chofer{
         -String nombre
+        -String apellido
         -String legajo
         +setNombre()
         +getNombre()
@@ -74,14 +82,17 @@ Parada --> "1..*" Atractivo
         -Bus bus
         -Recorrido recorrido
         -Chofer chofer
-        -time inicio
-        -time final
+        -time inicio_real
+        -time final_real
         +duracion()
+        +generar_ticket()
         +generar_reporte()
         +calcular_demora()
         +conocer_bus()
         +conocer_recorrido()
         +conocer_chofer()
+        +definir_dupla()
+        +buses_disponibles()
     }
 
 
