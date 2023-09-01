@@ -7,86 +7,95 @@
 ```mermaid
 classDiagram
 
+Dia --> "1..*" Viaje
+Viaje --> "1" Dupla
+Dupla --> "1" Bus
+Dupla --> "1" Chofer
 
-Viaje --> "1" Recorrido
-Viaje --> "1" Bus
-Viaje --> "1" Chofer
-
-Bus --> "1..*" Cambio_Estado
-Cambio_Estado --> "2" Estado
-
-Recorrido --> "1..*" Parada
+Bus --> "1..*" CambioEstado
+Viaje --> "1..*" Parada
 Parada --> "1..*" Atractivo
 
-    class Recorrido{
-        -int duracion_aproximada
-        -int hora_inicio
-        -int hora_finalizacion
-    }
-
-    note for Recorrido "Ver como hacer con el orden de las paradas"
-
     class Parada{
+        -String nombre
+        -String descripcion
+        -String direccion
+        -String foto[url]
+        +mostrarAtractivos()
+        +conocerAtractivos()
+        +definirOrdenParadas()
+    }
+    class Atractivo{
         -String nombre
         -String direccion
         -String descripcion
         -String foto
+        -Int calificacion
+        -Int distancia_parada
     }
-
-    class Atractivo{
-        -String nombre
-        -int calificacion
-    }
-
     class Bus{
         -String patente
-        -int num_patente
-        -datetime fecha_compra
-        -Estado estado
+        -Int num_unidad
+        -Datetime fecha_compra
+        -CambioEstado estado
         +conocer_estado()
     }
-
-    class Cambio_Estado{
-        -datetime fecha_cambio
-        -Estado estado_anterior
-        -Estado estado_nuevo
+    class CambioEstado{
+        -Datetime fecha_cambio
+        -String motivo
+        -Boolean estado_nuevo
+        -Boolean estado_anterior
     }
-
-    class Estado{
-        -String Nombre
-        -String descripcion
-    }
-
     class Chofer{
         -String nombre
+        -String apellido
         -String legajo
-        +setNombre()
-        +getNombre()
-        +setLegajo()
-        +getLegajo()
-        +new()
+        -Int dni
     }
+    class Dia {
+        -Date fecha
+        -Datetime inicio_recorridos
+        -Datetime fin_recorridos
+        +generarReporte()
+        +newDia()
+        +setFecha()
+        +setInicioRecorridos()
+        +setFinRecorridos()
+        +getFecha()
+        +getInicioRecorridos()
+        +getFinRecorridos()
+    }
+    note for Dia "Los setters y getters se extienden a todo el diagrama con los atributos respectivos a cada clase"
 
-    note for Chofer "Los metodos set y get que se definen en la clase Chofer son extensivos a todas las clases del modelo"
-
-
-    class Viaje{
+    class Viaje {
+        -Int numero_viaje
+        -String color
+        -Dupla dupla
+        -Parada parada
+        -Datetime inicio_real
+        -Datetime final_real
+        -Datetime inicio_estimado
+        -Datetime final_estimado
+        +calcularPromedioInicio-Duracion()
+        +calcularFinalEstimado()
+        +newViaje()
+        +conocerDupla()
+        +conocerParadas()
+        +ingresarInicio()
+        +ingresarFin()
+        +calcularDuracionEstimada()
+        +calcularDuracionFinal()
+        +generarInformeViaje()
+    }
+    class Dupla {
+        -Date fecha_inicio
+        -Date fecha_fin
         -Bus bus
-        -Recorrido recorrido
         -Chofer chofer
-        -time inicio
-        -time final
-        +duracion()
-        +generar_reporte()
-        +calcular_demora()
-        +conocer_bus()
-        +conocer_recorrido()
-        +conocer_chofer()
+        +conocerBus()
+        +conocerChofer()
+        +calcularFechaFin()
     }
-
-
-
-
 ```
 </details>
 
