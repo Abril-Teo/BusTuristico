@@ -12,12 +12,18 @@ class Estado(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=250)
     
+    def __str__(self) -> str:
+        return self.nombre
+        
     
 class Bus(models.Model):
     patente = models.CharField(max_length=12)
     numUnidad = models.IntegerField()
     fechaCompra = models.DateField()
     estado = models.ForeignKey('Estado', on_delete=models.CASCADE)
+    #list_display = ('patente','numUnidad')
+    def __str__(self) -> str:
+        return self.patente , self.numUnidad
     
     
 class CambioEstado(models.Model):
