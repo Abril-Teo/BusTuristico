@@ -6,24 +6,35 @@
 
 ```mermaid
 classDiagram
+    Viaje --> "1" Bus
+    Viaje --> "1" Chofer
+    
+    Bus --> "1..*" CambioEstado
+    Viaje --> "1" Recorrido
+    Recorrido --> "1" ParadaxRecorrido
+    ParadaxRecorrido --> "1..*" Parada
+    Parada --> "1..*" Atractivo
+    CambioEstado --> "1" Estado
 
-Dia --> "1..*" Viaje
-Viaje --> "1" Bus
-Viaje --> "1" Chofer
-
-Bus --> "1..*" CambioEstado
-Viaje --> "1*" ParadaxViaje
-ParadaxViaje --> "1..*" Parada
-Parada --> "1..*" Atractivo
-CambioEstado --> "1" Estado
+    class Recorrido{
+        -String color
+        -Parada parada
+        -int duracion_aproximada
+        -datetime hora_inicio_estimada
+        -datetime hora_finalizacion_estimada
+        -int frecuencia
+        -ObtenerParadas()
+        +new()
+    }
     class Parada{
         -String nombre
         -String descripcion
         -String direccion
         -String foto[url]
-        +mostrarAtractivos()
-        +conocerAtractivos()
+        +mostrarAtractivosCercanos()
+        +conocerAtractivosCercanos()
         +definirOrdenParadas()
+        +new()
     }
     class Atractivo{
         -String nombre
@@ -32,6 +43,7 @@ CambioEstado --> "1" Estado
         -String foto
         -Int calificacion
         -Int distancia_parada
+        +new()
     }
     class Bus{
         -String patente
@@ -39,44 +51,46 @@ CambioEstado --> "1" Estado
         -Datetime fecha_compra
         -CambioEstado estado
         +conocer_estado()
+        +isHabilitado()
+        +new()
+
     }
     class CambioEstado{
         -Datetime fecha_cambio
         -String motivo
         -Estado estado_nuevo
         -Estado estado_anterior
+        +new()
     }
     class Estado{
         -String nombre
         -Boolean habilitado
         -String detalles
+        +new()
     }
     class Chofer{
         -String nombre
         -String apellido
         -String legajo
         -Int dni
+        +Setnombre()
+        +getnombre()
+        +Setapellido()
+        +getapellido()
+        +Setlegajo()
+        +getlegajo()
+        +Setdni()
+        +getdni()
+        +new()
     }
-    class Dia {
-        -Date fecha
-        -Datetime inicio_recorridos
-        -Datetime fin_recorridos
-        +generarReporte()
-        +newDia()
-        +setFecha()
-        +setInicioRecorridos()
-        +setFinRecorridos()
-        +getFecha()
-        +getInicioRecorridos()
-        +getFinRecorridos()
-    }
-    note for Dia "Los setters y getters se extienden a todo el diagrama con los atributos respectivos a cada clase"
+    note for Chofer "Los setters y getters se extienden a todo el diagrama con los atributos respectivos a cada clase"
 
     class Viaje {
         -Int numero_viaje
         -String color
-        -Dupla dupla
-        -Parada parada
+        -Bus bus
+        -Chofer chofer
+        -Date fecha
         -Datetime inicio_real
         -Datetime final_real
         -Datetime inicio_estimado
@@ -84,7 +98,7 @@ CambioEstado --> "1" Estado
         +calcularPromedioInicio-Duracion()
         +calcularFinalEstimado()
         +newViaje()
-        +conocerParadas()
+        +conocerRecorrido()
         +ingresarInicio()
         +ingresarFin()
         +calcularDuracionEstimada()
@@ -94,11 +108,13 @@ CambioEstado --> "1" Estado
         +conocerChofer()
     }
 
-    class ParadaxViaje {
+    class ParadaxRecorrido {
         -Viaje viaje
         -Parada parada
         -int nroParada
         -time llegadaEstimada
+        +new()
+        +DefinirOrdenParadas()
     }
 ```
 </details>
