@@ -8,14 +8,14 @@
 classDiagram
 
 Dia --> "1..*" Viaje
-Viaje --> "1" Dupla
-Dupla --> "1" Bus
-Dupla --> "1" Chofer
+Viaje --> "1" Bus
+Viaje --> "1" Chofer
 
 Bus --> "1..*" CambioEstado
-Viaje --> "1..*" Parada
+Viaje --> "1*" ParadaxViaje
+ParadaxViaje --> "1..*" Parada
 Parada --> "1..*" Atractivo
-
+CambioEstado --> "1" Estado
     class Parada{
         -String nombre
         -String descripcion
@@ -43,8 +43,13 @@ Parada --> "1..*" Atractivo
     class CambioEstado{
         -Datetime fecha_cambio
         -String motivo
-        -Boolean estado_nuevo
-        -Boolean estado_anterior
+        -Estado estado_nuevo
+        -Estado estado_anterior
+    }
+    class Estado{
+        -String nombre
+        -Boolean habilitado
+        -String detalles
     }
     class Chofer{
         -String nombre
@@ -79,22 +84,21 @@ Parada --> "1..*" Atractivo
         +calcularPromedioInicio-Duracion()
         +calcularFinalEstimado()
         +newViaje()
-        +conocerDupla()
         +conocerParadas()
         +ingresarInicio()
         +ingresarFin()
         +calcularDuracionEstimada()
         +calcularDuracionFinal()
         +generarInformeViaje()
-    }
-    class Dupla {
-        -Date fecha_inicio
-        -Date fecha_fin
-        -Bus bus
-        -Chofer chofer
         +conocerBus()
         +conocerChofer()
-        +calcularFechaFin()
+    }
+
+    class ParadaxViaje {
+        -Viaje viaje
+        -Parada parada
+        -int nroParada
+        -time llegadaEstimada
     }
 ```
 </details>
