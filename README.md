@@ -30,6 +30,7 @@ classDiagram
         -String calle
         -Int numero
         -String foto
+        -Atractivo listaAtractivos
         +mostrarAtractivosCercanos()
         +conocerAtractivosCercanos()
         +definirOrdenParadas()
