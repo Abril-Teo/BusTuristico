@@ -5,11 +5,13 @@
 <h2>contenido dinamico</h2>
 
   <p>Datos guardados de los buses</p>
+  {%for bus in buses%}
   <ul>
     <li><strong>patente:</strong> {{ bus.patente }}</li>
     <li><strong>nUnidad:</strong> {{ bus.numUnidad }}</li>
     <li><strong>fechaCompra:</strong> {{ bus.fechaCompra }}</li>
     <li><strong>estado:</strong> {{ bus.estado }}</li>
   </ul>
+  {% endfor %}
 
 {% endblock %}

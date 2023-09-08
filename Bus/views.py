@@ -6,4 +6,4 @@ from .models import Bus
 
 def index(request):
     buses = Bus.objects.all()
-    return render(request, 'index.html',{'bus': buses})
+    return render(request, 'index.html',{'buses': buses})
