@@ -18,19 +18,18 @@ classDiagram
 
     class Recorrido{
         -String color
-        -Parada parada
         -int duracion_aproximada
         -datetime hora_inicio_estimada
         -datetime hora_finalizacion_estimada
         -int frecuencia
-        -ObtenerParadas()
         +new()
     }
     class Parada{
         -String nombre
         -String descripcion
-        -String direccion
-        -String foto[url]
+        -String calle
+        -Int numero
+        -String foto
         +mostrarAtractivosCercanos()
         +conocerAtractivosCercanos()
         +definirOrdenParadas()
@@ -38,7 +37,8 @@ classDiagram
     }
     class Atractivo{
         -String nombre
-        -String direccion
+        -String calle
+        -Int numero
         -String descripcion
         -String foto
         -Int calificacion
@@ -109,7 +109,7 @@ classDiagram
     }
 
     class ParadaxRecorrido {
-        -Viaje viaje
+        -Recorrido recorrido
         -Parada parada
         -int nroParada
         -time llegadaEstimada
