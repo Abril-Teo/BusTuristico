@@ -92,7 +92,7 @@ class CambioEstado(models.Model):
     motivo = models.CharField(max_length=100)
     
     def __str__(self) -> str:
-        return self.fechaCambio
+        return "viejo: " + self.estadoNuevo.nombre + ", nuevo: " + self.estadoAnterior.nombre
 
 class Atractivo(models.Model):
     nombre = models.CharField(max_length= 45)
