@@ -1,0 +1,7 @@
+<!-- En la carpeta de plantillas de tu aplicación (por ejemplo, miapp/templates/miapp/template.html) -->
+
+<form method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    <button type="submit">Enviar</button>
+</form>

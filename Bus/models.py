@@ -20,6 +20,7 @@ class Estado(models.Model):
     
 class Viaje(models.Model):
     nro_viaje = models.IntegerField()
+   # nro_viaje = models.AutoField(primary_key=True)
     fecha = models.DateField()
     inicio_real = models.TimeField()
     final_real = models.TimeField()
@@ -27,10 +28,11 @@ class Viaje(models.Model):
     final_estimado = models.TimeField()
     chofer = models.ForeignKey('Chofer', on_delete=models.CASCADE)
     bus = models.ForeignKey('Bus', on_delete=models.CASCADE)
+    #recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
     
     
-    def __str__(self) -> str:
-        return self.nro_viaje
+#    def __str__(self) -> str:
+#        return self.nro_viaje
 
     def CalcularDemora(self):
         return self.inicio_real - self.inicio_estimado
