@@ -1,6 +1,10 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
+from colorfield.fields import ColorField
+import webcolors
+from django.core.validators import FileExtensionValidator
+
 
 # Create your models here.
 
@@ -52,14 +56,15 @@ class Viaje(models.Model):
         pass
     
 class Recorrido(models.Model):
-    color = models.CharField(max_length=50)
+    hex_color = ColorField(default= '#FF0000')
     duracionAprox = models.IntegerField("Duracion en minutos")
     horaInicioAprox = models.DateTimeField()
     horaFinalizacionAprox = models.DateTimeField()
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:
-        return self.color
+        color_name = webcolors.hex_to_name(self.hex_color)
+        return color_name
     
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
@@ -111,7 +116,7 @@ class Parada(models.Model):
     calle = models.CharField(max_length=45)
     numero = models.IntegerField()
     descripcion = models.CharField(max_length=255)
-    foto = models.CharField(max_length=500)
+    foto = models.FileField(upload_to='imagenes/', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     atractivos = models.ManyToManyField(Atractivo)
     
     def __str__(self) -> str:

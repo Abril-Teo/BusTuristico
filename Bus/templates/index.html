@@ -1,13 +1,13 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-<h2>contenido estatico</h2>
+<h2>RECORRIDO: </h2>
 
 
-{%for bus in buses%}
-<div class="bus-container">
-  <p>{{ bus.patente }}</p>
-  <a href="http://www.buenosairescitybus.com/index.php?controller=services" target="_blank">
+{%for parada in paradas%}
+<div class="paradas-container">
+  <p>{{ parada.nombre }}</p>
+  <a href="{{ parada.id }}">
     <svg
      width="300px"
      height="180px"
@@ -49,15 +49,15 @@
          onmouseover=style="fill:#ff0000
          onclick="">
         <title
-           id="title2029">{{ bus.patente }}</title>
+           id="title2029">{{ parada.calle }} {{ parada.numero }}</title>
         <circle
-           id={{ bus.patente }}
+           id={{ parada.nombre }}
            class="botonParada"
            cx="98.651428"
            cy="142.05701"
            r="22.200111" />
         <path
-           id= "{{ bus.patente }}"
+           id= "{{ parada.nombre }}"
            style="fill:#800000;stroke:none;stroke-width:5.40018;stroke-opacity:0;paint-order:markers stroke fill"
            class="botonParada"
            d="M 98.651711,119.8571 A 22.200112,22.200112 0 0 0 76.451235,142.057 22.200112,22.200112 0 0 0 98.651711,164.25691 22.200112,22.200112 0 0 0 120.85162,142.057 22.200112,22.200112 0 0 0 98.651711,119.8571 Z m 0,4.55217 A 17.647533,17.647533 0 0 1 116.29887,142.057 17.647533,17.647533 0 0 1 98.651711,159.70472 17.647533,17.647533 0 0 1 81.003989,142.057 17.647533,17.647533 0 0 1 98.651711,124.40927 Z" />
@@ -69,20 +69,4 @@
 </div>
 
   {% endfor %}
-  {%for bus in buses%}
-
-<h2>contenido dinamico</h2>
-
-  <p>Datos guardados de los buses</p>
-  
-  <ul>
-    <li><strong>patente:</strong> {{ bus.patente }}</li>
-    <li><strong>nUnidad:</strong> {{ bus.numUnidad }}</li>
-    <li><strong>fechaCompra:</strong> {{ bus.fechaCompra }}</li>
-    <li><strong>estado:</strong> {{ bus.estado }}</li>
-  </ul>
-
-  
-  {% endfor %}
-
 {% endblock %}
