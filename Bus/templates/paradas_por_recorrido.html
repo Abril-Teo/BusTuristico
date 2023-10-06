@@ -1,0 +1,27 @@
+{% extends 'base_generics.html' %}
+
+{% block content %}
+<br><br><br><br>
+<ul>
+  <li><strong>{{ paradaxrecorridos }}</strong>
+    <hr>
+    infoparadas
+    {%for objeto in paradaxrecorridos %}
+
+    <li><strong>nombre:</strong> {{ objeto.parada.nombre }}</li>
+    <li><strong>calle:</strong> {{ objeto.parada.calle }}</li>
+    <li><strong>numero:</strong> {{ objeto.parada.numero }}</li>
+    
+    <li><strong>descripcion:</strong> {{ objeto.parada.descripcion }}</li>
+  <hr>
+  {% endfor %}
+  <hr>
+  paradas
+  {%for objeto in paradaxrecorridos %}
+  
+  
+    <li><strong>nombre:<a href="{{ objeto.parada.id }}">{{ objeto.parada.nombre }}</a></strong></li>
+
+  {% endfor %}
+</ul>
+{% endblock %}

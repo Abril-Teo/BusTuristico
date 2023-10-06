@@ -123,13 +123,13 @@ class Parada(models.Model):
         return self.nombre
 
 class ParadaxRecorrido(models.Model):
-    nroParada = models.IntegerField()
+    nroParada = models.IntegerField()#ACA VA EL ORDEN DE LA PARADA
     llegadaEstimada = models.TimeField()
     recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
     parada = models.ForeignKey('Parada', on_delete=models.CASCADE)
     
     def __str__(self) -> str:
-        return self.recorrido + " " + self.parada
+        return self.recorrido.__str__() + " " + self.parada.__str__()
     
     def DefinirOrdenParadas(): #ACA IRA UNA FUNCION EN LA QUE SE ORDENEN LAS PARADAS EN UN ARRAY POSIBLEMENTE
         pass 

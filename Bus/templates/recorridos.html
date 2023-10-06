@@ -1,6 +1,7 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
+<br><br><br><br>
 <h1>RECORRIDOS:</h1>
 {% for recorrido in recorrido_list %}
     <li><strong>RECORRIDO:<a href="{{ recorrido.id }}">{{ recorrido.hex_color }}</a> ({{ recorrido.duracionAprox }} minutos)</strong></li>
