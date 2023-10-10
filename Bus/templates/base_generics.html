@@ -16,6 +16,7 @@
   rel="stylesheet"
 />
 
+{% load static %}
 
 <head>
   <title>Bus Turistico</title>
@@ -23,7 +24,7 @@
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href=''>
-        <img src= ../static/images/logo.png alt="Bootstrap" width="250" height="55">
+        <img src="{% static '../static/images/logo.png' %}" alt="Logo" width="250" height="55">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -36,10 +37,10 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+              <a class="nav-link active" aria-current="page" href="/bus">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Recorridos</a>
+              <a class="nav-link" href="/bus/recorridos">Recorridos</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,7 +71,8 @@
   {% load static %}
   <style>
     body{
-      background-color: #2d928d;
+      background-color: #faeded;
+      margin-top: 100px;
     }
     .botonParada{
       fill:#ff0000;
