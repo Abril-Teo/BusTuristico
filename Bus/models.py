@@ -67,10 +67,6 @@ class Recorrido(models.Model):
     def __str__(self) -> str:
         return self.nombre
     
-    def nombreColor(self):
-        color_name = webcolors.hex_to_name(self.hex_color)
-        return color_name
-
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
     def new(self):
