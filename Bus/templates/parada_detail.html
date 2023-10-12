@@ -1,5 +1,5 @@
 {% extends "base_generics.html" %}
-{% block title %}<title>client detail</title>{% endblock %}
+{% block title %}<title>parada detail</title>{% endblock %}
 {% block content %}
 <br><br><br><br><br><br><br><br>
 <ul>
@@ -14,7 +14,7 @@
    
     {%for atractivo in parada.atractivos.all %}
 
-    <li><strong></strong> {{ atractivo }}</li>
+    <li><strong><a href="../atractivos/{{ atractivo.id }}">{{ atractivo }}</a></strong></li>
   
   {% endfor %}
 </ul>

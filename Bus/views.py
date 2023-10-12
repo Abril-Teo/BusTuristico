@@ -1,7 +1,7 @@
 from django.views import generic
 from django.shortcuts import render,get_object_or_404
 
-from .models import Parada, Recorrido, ParadaxRecorrido
+from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
 # Create your views here.
 
@@ -20,12 +20,8 @@ class ParadasDetailViews(generic.DetailView):
     template_name = 'parada_detail.html'
     
 class AtractivoDetailViews(generic.DetailView):
-    model = Parada
+    model = Atractivo
     template_name = 'atractivo_detail.html'
-    
-def Parada(request):
-    paradas = Parada.objects.all()
-    return render(request, 'index.html',{'paradas': paradas})
 
 
 def paradas_por_recorrido(request):
