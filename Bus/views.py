@@ -19,6 +19,10 @@ class ParadasDetailViews(generic.DetailView):
     model = Parada
     template_name = 'parada_detail.html'
     
+class AtractivoDetailViews(generic.DetailView):
+    model = Parada
+    template_name = 'atractivo_detail.html'
+    
 def Parada(request):
     paradas = Parada.objects.all()
     return render(request, 'index.html',{'paradas': paradas})
@@ -32,3 +36,5 @@ def paradas_por_recorrido(request):
         return render(request, 'paradas_por_recorrido.html', {'paradas_del_recorrido': paradas_del_recorrido})
     else:
         return render(request, 'index.html')
+    
+
