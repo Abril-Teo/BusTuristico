@@ -1,7 +1,16 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-<br><br><br><br>
+<h1>RECORRIDOS:</h1>
+<form method="post" action="{% url 'paradas_por_recorrido' %}">
+    {% csrf_token %}
+    <label for="nombre_recorrido">Seleccione un recorrido:</label>
+{% for recorrido in recorrido_list %}
+    <li><strong>RECORRIDO:<a href="{{ recorrido.id }}">{{ recorrido.nombreColor }}</a> ({{ recorrido.duracionAprox }} minutos)</strong></li>
+    <!-- PONER QUE MUESTRE LOS RECORRIDOS AL ENTRAR AL RECORRIDO MUESTRE TODAS LAS PARADAS Y AL ENTRAR A LA PARADA MUESTRE LA INFO CON LOS ATRACTIVOS  -->
+        <button type="submit" name="nombre_recorrido" value="{{ recorrido.nombre }}">{{ recorrido.nombre }}</button>
+    
+{% endfor %}
 
 <h1>RECORRIDOS:</h1>
 <form method="post" action="{% url 'paradas_por_recorrido' %}">

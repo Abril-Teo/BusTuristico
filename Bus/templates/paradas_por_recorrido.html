@@ -2,10 +2,18 @@
 
 {% block content %}
 <br><br><br><br>
+<<<<<<< HEAD
 <ul> 
     <hr>
     infoparadas
     {%for objeto in paradas_del_recorrido %}
+=======
+<ul>
+  <li><strong>{{ paradaxrecorridos }}</strong>
+    <hr>
+    infoparadas
+    {%for objeto in paradaxrecorridos %}
+>>>>>>> c8f3eff227dc313b183dcc6ef0100af8b0f72f2d
 
     <li><strong>nombre:</strong> {{ objeto.parada.nombre }}</li>
     <li><strong>calle:</strong> {{ objeto.parada.calle }}</li>
@@ -16,7 +24,11 @@
   {% endfor %}
   <hr>
   paradas
+<<<<<<< HEAD
   {%for objeto in paradas_del_recorrido %}
+=======
+  {%for objeto in paradaxrecorridos %}
+>>>>>>> c8f3eff227dc313b183dcc6ef0100af8b0f72f2d
   
   
     <li><strong>nombre:<a href="{{ objeto.parada.id }}">{{ objeto.parada.nombre }}</a></strong></li>
