@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
+
+from django.forms import ValidationError
 from colorfield.fields import ColorField
-import webcolors
 from django.core.validators import FileExtensionValidator
 
 
@@ -56,6 +57,7 @@ class Viaje(models.Model):
         pass
     
 class Recorrido(models.Model):
+    nombre = models.CharField(max_length=50)
     hex_color = ColorField(default= '#FF0000')
     duracionAprox = models.IntegerField("Duracion en minutos")
     horaInicioAprox = models.DateTimeField()
@@ -63,8 +65,7 @@ class Recorrido(models.Model):
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:
-        color_name = webcolors.hex_to_name(self.hex_color)
-        return color_name
+        return self.nombre
     
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
@@ -123,16 +124,18 @@ class Parada(models.Model):
         return self.nombre
 
 class ParadaxRecorrido(models.Model):
-    nroParada = models.IntegerField()
+    nroParada = models.IntegerField()#ACA VA EL ORDEN DE LA PARADA
     llegadaEstimada = models.TimeField()
     recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
     parada = models.ForeignKey('Parada', on_delete=models.CASCADE)
     
     def __str__(self) -> str:
-        return self.recorrido + " " + self.parada
+        return self.recorrido.__str__() + " " + self.parada.__str__()
     
-    def DefinirOrdenParadas(): #ACA IRA UNA FUNCION EN LA QUE SE ORDENEN LAS PARADAS EN UN ARRAY POSIBLEMENTE
-        pass 
-
+    def clean(self):
+        if ParadaxRecorrido.objects.filter(recorrido=self.recorrido, nroParada=self.nroParada).exclude(pk=self.pk).exists():
+            raise ValidationError('ESTA POSICION YA ESTA OCUPADA POR UNA PARADA SELECCIONE OTRA PORFAVOR.')
+            
+        
 
     

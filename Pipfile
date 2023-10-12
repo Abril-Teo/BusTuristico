@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 django = "*"
 django-colorfield = "*"
-webcolors = "*"
 
 [dev-packages]
 
