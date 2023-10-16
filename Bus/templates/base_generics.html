@@ -2,6 +2,7 @@
 <html lang="es">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+{% load static %}
 
 
 <!-- Font Awesome -->
@@ -22,8 +23,8 @@
   <link rel="icon" href="../static/images/busturistico-logo.ico">
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href=''>
-        <img src= ../static/images/logo.png alt="Bootstrap" width="250" height="55">
+      <a class="navbar-brand" href='/bus'>
+        <img src= "{% static '../static/images/logo.png'%}" alt="Logo" width="250" height="55">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -36,21 +37,18 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+              <a class="nav-link active" aria-current="page" href="/bus">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="Recorridos/">Recorridos</a>
+              <a class="nav-link" href="/bus/Recorridos">Recorridos</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Info
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Hoop On y Hoop Of</a></li>
+                <li><a class="dropdown-item" href="/bus/hoponhopoff">Hoop On y Hoop Of</a></li>
                 <li><a class="dropdown-item" href="#">Comodidades</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
                 <li><a class="dropdown-item" href="#">Preguntas Frecuentes</a></li>
               </ul>
             </li>
@@ -70,7 +68,10 @@
   {% load static %}
   <style>
     body{
-      background-color: #2d928d;
+      margin-top: 100px;
+      background-color: aliceblue;
+
+      justify-content: center;
     }
     .botonParada{
       fill:#ff0000;
@@ -93,6 +94,12 @@
       font-size: 30px;
       margin-top: 0px;
     }
+    .divisor-primary {
+      border: 2px solid #df1a25;
+	    width: 12.5%;
+      margin: 0 auto;
+    }
+
 
 </style>
 </head>
@@ -162,7 +169,7 @@
         <a
           class="btn btn-primary btn-floating m-1"
           style="background-color: #333333;"
-          href="#!"
+          href="https://github.com/Abril-Teo/BusTuristico"
           role="button"
           ><i class="fab fa-github"></i
         ></a>
@@ -174,7 +181,7 @@
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
       © 2020 Copyright:
-      <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+      <a class="text-white" >Grupo2</a>
     </div>
     <!-- Copyright -->
   </footer>

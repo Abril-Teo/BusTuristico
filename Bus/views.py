@@ -8,6 +8,9 @@ from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 def index(request):
     return render(request, 'index.html')
 
+def hopOnHopOff(request):
+    return render(request, 'hopOnHopOff.html')
+
 class RecorridosListView(generic.ListView):
     model = Recorrido
     context_object_name = 'recorrido_list'   # your own name for the list as a template variable
