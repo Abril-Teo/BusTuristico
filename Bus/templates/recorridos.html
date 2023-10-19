@@ -9,7 +9,7 @@
         <div class="row">
           {% for recorrido in recorrido_list %}
             <div class="col-md-6 mb-3">
-              <button class="btn btn-secondary btn-sm" type="button">
+              <button type="submit" name="nombre_recorrido" value="{{ recorrido.nombre }}" class="btn btn-secondary btn-sm" type="button">
                 <!-- Aquí coloca tu SVG -->
                 <svg width="100mm" height="100mm" viewBox="0 0 210 297" version="1.1" id="svg5" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><defs
                 id="defs2" />
@@ -229,5 +229,10 @@
 </form> 
 
 <li><strong>RECORRIDO:<a href="RecorridoDetalle/">{{ recorrido.hex_color }}</a> ({{ recorrido.duracionAprox }} minutos)</strong></li>
+
+
+
+IMPORTANTE NO BORRAR PORFAVOR LINKEAR EL BOTON
+<button type="submit" name="nombre_recorrido" value="{{ recorrido.nombre }}" class="btn btn-secondary btn-sm" type="button">
 -->
 {% endblock %}

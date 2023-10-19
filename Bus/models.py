@@ -105,7 +105,7 @@ class Atractivo(models.Model):
     calle = models.CharField(max_length=45)
     numero = models.IntegerField()
     descripcion = models.CharField(max_length=150)
-    foto = models.CharField(max_length=500)
+    foto = models.FileField(upload_to='imagenes/', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     calificacion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     
     

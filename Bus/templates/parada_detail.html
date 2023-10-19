@@ -14,7 +14,7 @@
     </div>
     <!-- Columna de imagen a la derecha -->
     <div class="col-md-6">
-      <img src="{{ parada.imagen.url }}" alt="{{ parada.nombre }}">
+      <img src="{{ parada.foto.url }}" alt="{{ parada.nombre }}">
     </div>
   </div>
 </div>
@@ -24,7 +24,7 @@
       {% for atractivo in parada.atractivos.all %}
       <div class="col-md-4">
           <div class="card mb-4" style="width: 18rem;">
-              <img src="..." class="card-img-top" alt="...">
+              <img src="{{ atractivo.foto.url }}" class="card-img-top" alt="...">
               <div class="card-body">
                   <h5 class="card-title">{{ atractivo.nombre }}</h5>
                   <p class="card-text">{{ atractivo.descripcion }}</p>
