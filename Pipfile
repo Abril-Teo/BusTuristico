@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
+mysqlclient = "*"
+django-colorfield = "*"
 
 [dev-packages]
 

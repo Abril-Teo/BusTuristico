@@ -2,6 +2,11 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
 
+from django.forms import ValidationError
+from colorfield.fields import ColorField
+from django.core.validators import FileExtensionValidator
+
+
 # Create your models here.
 
 from django.db import models
@@ -20,7 +25,6 @@ class Estado(models.Model):
     
 class Viaje(models.Model):
     nro_viaje = models.IntegerField()
-   # nro_viaje = models.AutoField(primary_key=True)
     fecha = models.DateField()
     inicio_real = models.TimeField()
     final_real = models.TimeField()
@@ -28,11 +32,10 @@ class Viaje(models.Model):
     final_estimado = models.TimeField()
     chofer = models.ForeignKey('Chofer', on_delete=models.CASCADE)
     bus = models.ForeignKey('Bus', on_delete=models.CASCADE)
-    #recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
     
     
-#    def __str__(self) -> str:
-#        return self.nro_viaje
+    def __str__(self) -> str:
+        return self.nro_viaje
 
     def CalcularDemora(self):
         return self.inicio_real - self.inicio_estimado
@@ -54,14 +57,15 @@ class Viaje(models.Model):
         pass
     
 class Recorrido(models.Model):
-    color = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50)
+    hex_color = ColorField(default= '#FF0000')
     duracionAprox = models.IntegerField("Duracion en minutos")
     horaInicioAprox = models.DateTimeField()
     horaFinalizacionAprox = models.DateTimeField()
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:
-        return self.color
+        return self.nombre
     
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
@@ -94,7 +98,7 @@ class CambioEstado(models.Model):
     motivo = models.CharField(max_length=100)
     
     def __str__(self) -> str:
-        return "viejo: " + self.estadoNuevo.nombre + ", nuevo: " + self.estadoAnterior.nombre
+        return self.estadoAnterior.nombre + " " + self.estadoNuevo.nombre
 
 class Atractivo(models.Model):
     nombre = models.CharField(max_length= 45)
@@ -113,23 +117,25 @@ class Parada(models.Model):
     calle = models.CharField(max_length=45)
     numero = models.IntegerField()
     descripcion = models.CharField(max_length=255)
-    foto = models.CharField(max_length=500)
+    foto = models.FileField(upload_to='imagenes/', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     atractivos = models.ManyToManyField(Atractivo)
     
     def __str__(self) -> str:
         return self.nombre
 
 class ParadaxRecorrido(models.Model):
-    nroParada = models.IntegerField()
+    nroParada = models.IntegerField()#ACA VA EL ORDEN DE LA PARADA
     llegadaEstimada = models.TimeField()
     recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
     parada = models.ForeignKey('Parada', on_delete=models.CASCADE)
     
     def __str__(self) -> str:
-        return self.recorrido + " " + self.parada
+        return self.recorrido.__str__() + " " + self.parada.__str__()
     
-    def DefinirOrdenParadas(): #ACA IRA UNA FUNCION EN LA QUE SE ORDENEN LAS PARADAS EN UN ARRAY POSIBLEMENTE
-        pass 
-
+    def clean(self):
+        if ParadaxRecorrido.objects.filter(recorrido=self.recorrido, nroParada=self.nroParada).exclude(pk=self.pk).exists():
+            raise ValidationError('ESTA POSICION YA ESTA OCUPADA POR UNA PARADA SELECCIONE OTRA PORFAVOR.')
+            
+        
 
     
