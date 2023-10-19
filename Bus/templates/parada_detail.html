@@ -2,20 +2,38 @@
 {% load static %}
 {% block title %}<title>parada detail</title>{% endblock %}
 {% block content %}
-<ul>
-    <li><strong>nombre:</strong> {{ parada.nombre }}</li>
-    <li><strong>calle:</strong> {{ parada.calle }}</li>
-    <li><strong>numero:</strong> {{ parada.numero }}</li>
-    
-    <li><strong>descripcion:</strong> {{ parada.descripcion }}</li>
-    <li><strong>foto:</strong></li>
-    <img src="{{ parada.foto.url }}" alt="{{parada.name}}" style="width:250px;"></img>
-    <li><strong>atractivos:</strong></li>
-   
-    {%for atractivo in parada.atractivos.all %}
+<div class="container">
+  <div class="row">
+    <!-- Columna de texto en la mitad izquierda -->
+    <div class="col-md-6">
+      <h1>{{ parada.nombre }}</h1>
+      <p>
+        {{ parada.descripcion }} <br><br>
+        <strong>Dirección: </strong> {{ parada.calle }} {{ parada.numero }}
+      </p>
+    </div>
+    <!-- Columna de imagen a la derecha -->
+    <div class="col-md-6">
+      <img src="{{ parada.imagen.url }}" alt="{{ parada.nombre }}">
+    </div>
+  </div>
+</div>
+<br><br><br><br>
+<div class="container">
+  <div class="row">
+      {% for atractivo in parada.atractivos.all %}
+      <div class="col-md-4">
+          <div class="card mb-4" style="width: 18rem;">
+              <img src="..." class="card-img-top" alt="...">
+              <div class="card-body">
+                  <h5 class="card-title">{{ atractivo.nombre }}</h5>
+                  <p class="card-text">{{ atractivo.descripcion }}</p>
+                  <a href="#" class="btn btn-primary">Más información</a>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+  </div>
+</div>
 
-    <li><strong><a href="../atractivos/{{ atractivo.id }}">{{ atractivo }}</a></strong></li>
-  
-  {% endfor %}
-</ul>
 {% endblock %}

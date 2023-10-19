@@ -10,4 +10,3 @@ urlpatterns = [
     path("Recorridos/", views.RecorridosListView.as_view(), name="recorridos"),#se mostraran los recorridos
     path("Recorridos/RecorridoDetalle/", views.paradas_por_recorrido, name="paradas_por_recorrido"),
 ]
-
