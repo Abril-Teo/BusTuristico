@@ -3,7 +3,6 @@ from .models import Atractivo, Bus, Chofer, Estado,CambioEstado, Parada, Paradax
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
 
-# Register your models here.
 class BusAdmin(admin.ModelAdmin):
     search_fields = ('patente','numUnidad')
     list_display = ('patente','numUnidad','fechaCompra')

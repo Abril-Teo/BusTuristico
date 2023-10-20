@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from . import views
 
@@ -12,7 +13,8 @@ urlpatterns = [
     path('chofferes/', views.cargaRecorridos, name='cargaRecorridos'),
     path('accounts/vista_login/', views.vista_login, name='vista_login'),
     path('accounts/vista_login/comprobacion', views.logincomprobacion, name='login_comprobacion'),
-    path('super/', views.superuseronly, name='superonly'),
-    path('staff/', views.staffonly, name='staffonly'),
+    path('super/', user_passes_test(lambda u: u.is_superuser)(views.superuseronly), name='superonly'),
+    path('staff/', user_passes_test(lambda u: u.is_staff)(views.staffonly), name='staffonly'),
+    path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
 ]
 

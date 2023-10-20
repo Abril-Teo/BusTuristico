@@ -9,18 +9,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
-# Define un permiso para superusuarios
-
-
-
-# Create your models here.
-
 from django.db import models
-
-# Create your models here.
-
-
-
 
 class Estado(models.Model):
     nombre = models.CharField(max_length=100)
@@ -144,18 +133,3 @@ class ParadaxRecorrido(models.Model):
             raise ValidationError('ESTA POSICION YA ESTA OCUPADA POR UNA PARADA SELECCIONE OTRA PORFAVOR.')
             
         
-'''
-HACER PERMISOOOOOOOOOOOOOOOOOOOOOOOOOS
-superuser_permission = Permission.objects.create(
-    codename='can_access_superuser_view',
-    name='Can access superuser view',
-    content_type=ContentType.objects.get_for_model(User)
-)
-
-# Define un permiso para personal de staff
-staff_permission = Permission.objects.create(
-    codename='can_access_staff_view',
-    name='Can access staff view',
-    content_type=ContentType.objects.get_for_model(User)
-)
-'''

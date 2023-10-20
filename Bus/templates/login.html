@@ -11,7 +11,9 @@
         </label>
     <button type="submit">Iniciar sesión</button>
 </form>
-
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
   
 {% endblock %}
   

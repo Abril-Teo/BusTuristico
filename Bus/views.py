@@ -1,12 +1,11 @@
 from django.views import generic
 from django.shortcuts import render,get_object_or_404, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required,user_passes_test
 
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
-# Create your views here.
 
 def vista_login(request):
     return render(request, 'login.html')
@@ -18,16 +17,13 @@ def logincomprobacion(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             if user.is_superuser:
-                # Superusuario, redirige al sitio de administración
                 login(request,user)
-                return redirect('admin:index')#HACER QUE SE LOGUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+                return redirect('superonly')
             if user.is_staff:
-                # Chofer, redirige a tu vista personalizada
                 login(request,user)
-                return redirect('recorridos')
+                return redirect('staffonly')
         else:
-            # Lógica para manejar inicio de sesión fallido
-            return render(request, 'error')
+            return render(request, 'login.html', {'error': 'Usuario o contraseña incorrectos'})
 
 
 def index(request):
@@ -38,8 +34,8 @@ def hopOnHopOff(request):
 
 class RecorridosListView(generic.ListView):
     model = Recorrido
-    context_object_name = 'recorrido_list'   # your own name for the list as a template variable
-    queryset = Recorrido.objects.all() # Get 5 books containing the title war
+    context_object_name = 'recorrido_list' 
+    queryset = Recorrido.objects.all() 
     template_name = 'recorridos.html'
         
 
@@ -53,7 +49,6 @@ class AtractivoDetailViews(generic.DetailView):
 
 
 def paradas_por_recorrido(request):
-    #ANALIZAR ESTO PARA QUE NO SE PUEDAN REPETIR LOS NUMEROS DE PARADA EN EL ORDEN
     if request.method == 'POST':
         nombre_recorrido = request.POST.get('nombre_recorrido')
         paradas_del_recorrido = ParadaxRecorrido.objects.filter(recorrido__nombre=nombre_recorrido).order_by('nroParada')
@@ -61,15 +56,17 @@ def paradas_por_recorrido(request):
     else:
         return render(request, 'index.html')
     
-
+def cerrar_sesion(request):
+    logout(request)
+    return redirect('index') 
 @login_required
 def cargaRecorridos(request):
     return render(request, 'cargaRecorridos.html')
 
-@permission_required('myapp.can_access_superuser_view')
+@user_passes_test(lambda u: u.is_superuser)
 def superuseronly(request):
     return render(request, 'solosuper.html')
 
-@permission_required('myapp.can_access_staff_view')
+@user_passes_test(lambda u: u.is_staff)
 def staffonly(request):
     return render(request, 'solostaff.html')

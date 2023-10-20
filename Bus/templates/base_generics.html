@@ -42,12 +42,29 @@
             <li class="nav-item">
               <a class="nav-link" href="/bus/Recorridos">Recorridos</a>
             </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
+              <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
+                  {% csrf_token %}
+              </form>
+          </li>
+          <script>
+            document.getElementById('cerrar-sesion-link').addEventListener('click', function(e) {
+                e.preventDefault();  
+                document.getElementById('cerrar-sesion-form').submit();  
+            });
+          </script>
+            {% else %}
             <li class="nav-item">
               <a class="nav-link" href="/bus/accounts/vista_login/">Iniciar sesion</a>
             </li>
+              
+            {% endif %}
+
             
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/bus/chofferes">Soy Choffer</a>
+              <a class="nav-link active" aria-current="page" href="/bus/staff/">Soy Choffer</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
