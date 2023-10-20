@@ -27,6 +27,8 @@ SECRET_KEY = 'django-insecure-j(j60x5mqi!%pg@udda)k!-)wj=#yz+8x*1xdn+ej-(f&66bt0
 DEBUG = True
 
 ALLOWED_HOSTS = []
+#PARA EL LOGIN PERSONALIZADO
+LOGIN_URL = 'vista_login'
 
 
 # Application definition
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Bus',
     'colorfield',
+    'star_ratings',
 ]
 
 MIDDLEWARE = [

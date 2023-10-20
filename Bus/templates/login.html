@@ -1,0 +1,24 @@
+{% extends 'base_generics.html' %}
+
+{% block content %}
+<form method="post" action="{% url 'vista_login' %}">
+    {% csrf_token %}
+        <label for="username">Nombre de usuario:
+            <input type="text" name="username">
+        </label>
+        <label for="password">Contraseña:
+            <input type="password" name="password">
+        </label>
+    <button type="submit">Iniciar sesión</button>
+</form>
+
+<a href="{% url 'vista_login' %}" class="btn">Ir a la Vista</a>
+  
+{% endblock %}
+  
+  
+  
+  
+  
+  
+  

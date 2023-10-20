@@ -75,7 +75,7 @@ class Recorrido(models.Model):
 class Chofer(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    leagajo = models.CharField(max_length=100)
+    legajo = models.CharField(max_length=100)
     dni = models.IntegerField()
     def __str__(self) -> str:
         return self.nombre + " " + self.apellido
