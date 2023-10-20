@@ -11,5 +11,8 @@ urlpatterns = [
     path('accounts/',include('django.contrib.auth.urls')),
     path('chofferes/', views.cargaRecorridos, name='cargaRecorridos'),
     path('accounts/vista_login/', views.vista_login, name='vista_login'),
+    path('accounts/vista_login/comprobacion', views.logincomprobacion, name='login_comprobacion'),
+    path('super/', views.superuseronly, name='superonly'),
+    path('staff/', views.staffonly, name='staffonly'),
 ]
 

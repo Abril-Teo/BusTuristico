@@ -2,15 +2,16 @@ from django.views import generic
 from django.shortcuts import render,get_object_or_404, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
 # Create your views here.
 
-def loginenter(request):
+def vista_login(request):
     return render(request, 'login.html')
 
-def vista_login(request):
+def logincomprobacion(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -61,6 +62,14 @@ def paradas_por_recorrido(request):
         return render(request, 'index.html')
     
 
-#@login_required
+@login_required
 def cargaRecorridos(request):
     return render(request, 'cargaRecorridos.html')
+
+@permission_required('myapp.can_access_superuser_view')
+def superuseronly(request):
+    return render(request, 'solosuper.html')
+
+@permission_required('myapp.can_access_staff_view')
+def staffonly(request):
+    return render(request, 'solostaff.html')
