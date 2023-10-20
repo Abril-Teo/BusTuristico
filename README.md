@@ -120,3 +120,78 @@ classDiagram
 ```
 </details>
 
+
+<details>
+<summary>Diagrama entidad relacion.</summary>
+
+```erDiagram
+Recorrido{
+        String color
+        int duracion_aproximada
+        datetime hora_inicio_estimada
+        datetime hora_finalizacion_estimada
+        int frecuencia
+    }
+
+    Parada{
+        String nombre
+        String descripcion
+        String calle
+        Int numero
+        String foto
+        Atractivo listaAtractivos
+    }
+
+    Atractivo{
+        String nombre
+        String calle
+        Int numero
+        String descripcion
+        String foto
+    }
+
+    Bus{
+        String patente
+        Int num_unidad
+        Datetime fecha_compra
+        CambioEstado estado
+    }
+
+    CambioEstado{
+        Datetime fecha_cambio
+        String motivo
+    }
+
+    Estado{
+        String nombre
+        Boolean habilitado
+        String detalles    
+    }
+
+    Chofer{
+        String nombre
+        String apellido
+        String legajo
+        Int dni
+    }
+
+    Viaje {
+        Int numero_viaje
+        String color
+        Bus bus
+        Chofer chofer
+        Date fecha
+        Datetime inicio_real
+        Datetime final_real
+        Datetime inicio_estimado
+        Datetime final_estimado
+    }
+
+    ParadaxRecorrido {
+        Recorrido recorrido
+        Parada parada
+        int nroParada
+        datetime llegadaEstimada
+    }
+```
+</details>
