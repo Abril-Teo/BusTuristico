@@ -1,13 +1,3 @@
-
-{% extends 'base_generics.html' %}
-
-{% block content %}
-ACA PUEDE ENTRAR UN SUPERUSER
-<form method="post">
-    {% csrf_token %}
-    {{ formulario.as_p }}
-    <button type="submit">Enviar</button>
-</form>
 <form method="post">
     {% csrf_token %}
     {{ viaje_form.as_p }}
@@ -32,5 +22,3 @@ ACA PUEDE ENTRAR UN SUPERUSER
   
     <input type="submit" value="Guardar Viaje">
   </form>
-{% endblock %}
-

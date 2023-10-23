@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 
-
+#FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA LO DE DEFINIR DUPLA Y LO DE CAMBIAR ESTADO Y QUE SOLO SE MUESTREN LOS COLECTIVOS QUE ESTAN HABILITADOS PARA ANDAR
 
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
@@ -61,6 +61,7 @@ class CargarViajeDetailViews(UpdateView, DetailView):
     model = Viaje
     template_name = 'cargar_viaje.html'
     fields = ['inicio_real', 'final_real']
+    #redirect('staffonly')
 
 
 def paradas_por_recorrido(request):

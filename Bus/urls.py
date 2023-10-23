@@ -16,7 +16,6 @@ urlpatterns = [
     path('super/', user_passes_test(lambda u: u.is_superuser)(views.viewViaje), name='solosuper'),
     path('staff/', user_passes_test(lambda u: u.is_staff)(views.staffonly), name='staffonly'),
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
-    #path('viajes/', views.obtenerviajes, name='obtener_viajes_colectivero'),
     path('staff/<int:pk>', views.CargarViajeDetailViews.as_view(), name='cargar_viaje'),
 ]
 

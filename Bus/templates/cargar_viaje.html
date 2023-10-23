@@ -9,7 +9,7 @@
     
     <body>
         <h1>Editar Viaje</h1>
-        <form method="post">
+        <form method="post" action="{% url 'staffonly'%}"> ACA VA A IR EL METODO EL URL QUE REDIRECCIONA A LA VIEW QUE CAMBIA LA FECHA INICIO POR LA INICIO Y LA FINAL POR LA FINAL
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Guardar Cambios</button>
@@ -17,5 +17,6 @@
         <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
     </body>
 
+    
 </ul>
 {% endblock %}
