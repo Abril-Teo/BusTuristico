@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Bus',
     'colorfield',
-    'star_ratings',
 ]
 
 MIDDLEWARE = [

@@ -11,6 +11,10 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
+def validate_numeric(value):
+    if not value.isdigit():
+        raise ValidationError('Este campo solo debe contener números.')
+
 class Estado(models.Model):
     nombre = models.CharField(max_length=100)
     habilitado = models.BooleanField()
@@ -20,18 +24,20 @@ class Estado(models.Model):
         return self.nombre
     
 class Viaje(models.Model):
+    
     nro_viaje = models.IntegerField()
     fecha = models.DateField()
-    inicio_real = models.TimeField()
-    final_real = models.TimeField()
+    inicio_real = models.TimeField(null=True, blank=True)
+    final_real = models.TimeField(null=True, blank=True)
     inicio_estimado = models.TimeField()
     final_estimado = models.TimeField()
     chofer = models.ForeignKey('Chofer', on_delete=models.CASCADE)
     bus = models.ForeignKey('Bus', on_delete=models.CASCADE)
+    recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
+
     
     
-    def __str__(self) -> str:
-        return self.nro_viaje
+    
 
     def CalcularDemora(self):
         return self.inicio_real - self.inicio_estimado
@@ -72,7 +78,7 @@ class Chofer(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     legajo = models.CharField(max_length=100)
-    dni = models.IntegerField()
+    dni = models.CharField(max_length=8, validators=[validate_numeric])
     def __str__(self) -> str:
         return self.nombre + " " + self.apellido
 
@@ -100,19 +106,25 @@ class Atractivo(models.Model):
     nombre = models.CharField(max_length= 45)
     calle = models.CharField(max_length=45)
     numero = models.IntegerField()
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.TextField()
     foto = models.FileField(upload_to='imagenes/', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     calificacion = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     
-    
     def __str__(self) -> str:
         return self.nombre
+    
+    def estrellas_vacias(self) -> int:
+        estrellas_va = (5 - self.calificacion)
+        return estrellas_va
+    
+    def get_range(value):
+        return range(value)
 
 class Parada(models.Model):
     nombre = models.CharField(max_length= 45)
     calle = models.CharField(max_length=45)
     numero = models.IntegerField()
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.TextField()
     foto = models.FileField(upload_to='imagenes/', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
     atractivos = models.ManyToManyField(Atractivo)
     

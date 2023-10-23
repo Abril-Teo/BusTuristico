@@ -46,6 +46,12 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin/">Admin site</a>
             </li>
+          <form method="post" action="{% url 'solosuper' %}">
+            {% csrf_token %}
+            <li class="nav-item">
+                <button type="submit" class="nav-link active" aria-current="page">Cargar nuevos viajes</button>
+            </li>
+          </form>
             {% endif %}
             {% if user.is_authenticated %}
             <li class="nav-item">
@@ -66,11 +72,14 @@
             </li>
               
             {% endif %}
-
-            
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/bus/staff/">Soy Choffer</a>
-            </li>
+            {% if user.is_staff %}
+              <form method="post" action="{% url 'staffonly' %}">
+                {% csrf_token %}
+                <li class="nav-item">
+                    <button type="submit" class="nav-link active" aria-current="page">Cargar tiempos viajes</button>
+                </li>
+            </form>
+          {% endif %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Info
@@ -86,14 +95,6 @@
       </div>
     </div>
   </nav>
-
-
-
-
-
-
-
-
   {% load static %}
   <style>
     body{

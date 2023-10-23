@@ -5,8 +5,8 @@
 
 <style>
   .limit_img {
-    max-width: 300px;
-    height: auto;
+    width: 700px;
+    height: 300px;
   }
 </style>
 
@@ -29,18 +29,46 @@
 <br><br><br><br>
 <div class="container">
   <div class="row">
-      {% for atractivo in parada.atractivos.all %}
-      <div class="col-md-4">
-          <div class="card mb-4" style="width: 18rem;">
-              <img src="{{ atractivo.foto.url }}" class="card-img-top" alt="...">
-              <div class="card-body">
-                  <h5 class="card-title">{{ atractivo.nombre }}</h5>
-                  <p class="card-text">{{ atractivo.descripcion }}</p>
-                  <a href="#" class="btn btn-primary">Más información</a>
-              </div>
-          </div>
-      </div>
-      {% endfor %}
+    {% for atractivo in parada.atractivos.all %}
+    <div class="col-md-4">
+        <div class="card mb-4" style="width: 18rem;">
+            <img src="{{ atractivo.foto.url }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5> {{ atractivo.nombre }} </h5>
+                <div class="rating">
+                    {% for i in "*****" %}
+                        {% if forloop.counter <= atractivo.calificacion %}
+                            <i class="fa fa-star text-warning"></i>
+                        {% else %}
+                            <i class="fa fa-star-o text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <br>
+                <button type="button" class="btn btn-primary" onclick="toggleInfo(this)">Más Información</button>
+                <div class="more-info" style="display: none;">
+                    <!-- Aquí coloca el contenido adicional que deseas mostrar -->
+                    <p>{{ atractivo.descripcion }}</p>
+                    <p><strong>Dirección:</strong> {{atractivo.calle}} {{atractivo.numero}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    function toggleInfo(button) {
+        const cardBody = button.parentElement;
+        const moreInfo = cardBody.querySelector('.more-info');
+
+        if (moreInfo.style.display === 'none' || moreInfo.style.display === '') {
+            moreInfo.style.display = 'block';
+            button.style.display = 'none';
+        } else {
+            moreInfo.style.display = 'none';
+        }
+    }
+</script>
   </div>
 </div>
 

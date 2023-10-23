@@ -1,6 +1,17 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-ACA PUEDE ENTRAR SOLO EL COLECTIVERO(STAFF) O UN SUPERUSER
-USTED SE LOGUEO COMO {{ user.first_name }} {{ user.last_name }}
+<h4> Bienvenido chofer: {{ user.first_name }} {{ user.last_name }}</h4>
+<h4>Viajes de hoy:</h4>
+<!-- 
+<form method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    <button type="submit">Enviar</button>
+</form>
+-->
+{% for viaje in viajes_choffer %}
+    <a href="/bus/staff/{{viaje.id}}"> <p>esta es el viaje nro: {{ viaje.nro_viaje }} fecha: {{ viaje.fecha}}</p></a>
+{% endfor %}
+
 {% endblock %}

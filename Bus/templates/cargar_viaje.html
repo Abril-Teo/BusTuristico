@@ -1,0 +1,21 @@
+{% extends "base_generics.html" %}
+{% block title %}<title>viaje</title>{% endblock %}
+
+{% block content %}
+<ul>
+    <li><strong>nro_viaje:</strong> {{ viaje.nro_viaje }}</li>
+    <li><strong>Inicio:</strong> {{ viaje.inicio_estimado }}</li>
+    <li><strong>Final:</strong> {{ viaje.final_estimado }}</li>
+    
+    <body>
+        <h1>Editar Viaje</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar Cambios</button>
+        </form>
+        <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
+    </body>
+
+</ul>
+{% endblock %}

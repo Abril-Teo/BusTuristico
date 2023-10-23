@@ -144,7 +144,7 @@
      d="m 14.586366,230.27572 0.01068,-65.27873"
      id="path6578" /><text
      xml:space="preserve"
-     style="font-size:9.52721px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.900209;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+     style="font-size:9.52721px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.900209;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
      x="40.388618"
      y="110.32585"
      id="text8181"
@@ -163,12 +163,14 @@
        sodipodi:role="line"
        id="tspan8285"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.474;stroke-dasharray:none;stroke-opacity:1"
-       x="5.6519451"
-       y="121.75496">{{ objeto.nroParada }}</tspan></text></g><g
+       x="18.6519451"
+       y="121.75496" 
+       text-anchor="middle">{{ objeto.nroParada }}</tspan></text></g><g
    inkscape:groupmode="layer"
    id="layer2"
    inkscape:label="atrads" /></svg>
       </a>
+      <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ <strong>Direccion: </strong> {{objeto.parada.calle}} {{objeto.parada.numero}}</p>
     </div>
     {% if forloop.counter|divisibleby:3 and not forloop.last %}
       </div><div class="row">

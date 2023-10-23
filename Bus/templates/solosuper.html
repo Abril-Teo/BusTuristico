@@ -1,5 +1,12 @@
+
 {% extends 'base_generics.html' %}
 
 {% block content %}
 ACA PUEDE ENTRAR UN SUPERUSER
+<form method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    <button type="submit">Enviar</button>
+</form>
 {% endblock %}
+
