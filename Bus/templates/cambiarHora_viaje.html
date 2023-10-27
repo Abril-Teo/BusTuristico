@@ -1,0 +1,35 @@
+{% extends "base_generics.html" %}
+{% block title %}<title>viaje</title>{% endblock %}
+
+{% block content %}
+<ul>
+    <li><strong>nro_viaje:</strong> {{ viaje.nro_viaje }}</li>
+    <li><strong>Inicio estimado:</strong> {{ viaje.inicio_estimado }}</li>
+    <li><strong>Final estimado:</strong> {{ viaje.final_estimado }}</li>
+    
+    <body>
+        <h1>Editar Viaje</h1>
+        {% if viaje.inicio_real == null %}
+            <form method="post" action="{% url 'actualizarinicio'%}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ viaje.id }}">
+                <button type="submit">EMPEZAR VIAJE</button>
+            </form>
+        {% else %}
+        {% endif %}
+        {% if viaje.final_real == null %}
+            <form method="post" action="{% url 'actualizarfinal'%}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ viaje.id }}">
+                <button type="submit">FINALIZAR VIAJE</button>
+            </form>
+        {% else %}
+            <li><strong>El viaje finalizo a las:</strong> {{ viaje.final_real }}</li>
+        {% endif %}
+        <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
+        {% if viaje.final_real != null and viaje.inicio_real != null %}
+            <a href="{% url 'EmitirTicket' %}" class="btn" target="_blank">Generar PDF</a>
+        {% endif %}
+    </body>
+</ul>
+{% endblock %}

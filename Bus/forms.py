@@ -8,31 +8,36 @@ def validate_numeric(value):
         raise forms.ValidationError('Este campo solo debe contener números.')
 
 class NuevoViaje(forms.Form):
-    nroViaje = forms.IntegerField()
-    fecha = forms.DateField(initial=date.today())
-    inicioEstimado = forms.TimeField(help_text="Ingresar el horario de inicio estimado")
-    finalEstimado = forms.TimeField(help_text="Ingresar el horario de final estimado")
-    chofer = forms.ModelChoiceField(queryset=Chofer.objects.all())
-    bus = forms.ModelChoiceField(queryset=Bus.objects.all())
-    recorrido = forms.ModelChoiceField(queryset=Recorrido.objects.all())
+    nroViaje = forms.IntegerField(
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    fecha = forms.DateField(initial=date.today(),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    inicioEstimado = forms.TimeField(help_text="Ingresar el horario de inicio estimado",
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    finalEstimado = forms.TimeField(help_text="Ingresar el horario de final estimado",
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    chofer = forms.ModelChoiceField(queryset=Chofer.objects.all(),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    bus = forms.ModelChoiceField(queryset=Bus.objects.filter(estado__estadoNuevo__habilitado = True),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    recorrido = forms.ModelChoiceField(queryset=Recorrido.objects.all(),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
     
 class NuevoChofer(forms.Form):
     nombre = forms.CharField(max_length=100)
     apellido = forms.CharField(max_length=100)
     legajo = forms.CharField(max_length=100)
     dni = forms.CharField(max_length=8, validators=[validate_numeric])
-    def save_model(self, obj):
-        username = obj.dni
-        password = obj.legajo
-        name = obj.nombre
-        lastname = obj.apellido
-        user, created = User.objects.get_or_create(username=username)
-        user.set_password(password)
-        user.first_name = name
-        user.last_name = lastname
-        user.is_staff = True
-        user.save()
-        obj.save()
+    
+    
+        
         
 class NuevoBus(forms.Form):
     patente = forms.CharField(max_length=12)

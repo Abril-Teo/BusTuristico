@@ -2,35 +2,25 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-ACA PUEDE ENTRAR UN SUPERUSER
+ACA PUEDE ENTRAR UN SUPERUSER PODEMOS AGREGAR COMO LAS ALARMAS QUE SEAN SEMANALES Y SE CREAN PARA TODA LA SEMANA IGUALES
 <form method="post">
     {% csrf_token %}
     {{ formulario.as_p }}
     <button type="submit">Enviar</button>
 </form>
-<form method="post">
-    {% csrf_token %}
-    {{ viaje_form.as_p }}
+<form method="post" action="{% url 'nuevoChofer' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo chofer</button>
+</form>
+<form method="post" action="">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo colectivo</button>
+</form>
+<form method="post" action="">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo Recorrido</button>
+</form>
   
-    {{ bus_formset.management_form }}
-    {% for form in bus_formset %}
-      {{ form.as_p }}
-    {% endfor %}
-    <button id="add_bus_form">Agregar Nuevo Bus</button>
-  
-    {{ chofer_formset.management_form }}
-    {% for form in chofer_formset %}
-      {{ form.as_p }}
-    {% endfor %}
-    <button id="add_chofer_form">Agregar Nuevo Chofer</button>
-  
-    {{ recorrido_formset.management_form }}
-    {% for form in recorrido_formset %}
-      {{ form.as_p }}
-    {% endfor %}
-    <button id="add_recorrido_form">Agregar Nuevo Recorrido</button>
-  
-    <input type="submit" value="Guardar Viaje">
-  </form>
+   
 {% endblock %}
 

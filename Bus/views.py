@@ -1,15 +1,18 @@
-from datetime import date
+from datetime import date, timedelta, timezone
+from datetime import datetime
+from io import BytesIO, StringIO
+from tkinter import Canvas
+import tkinter
 from django.views import View, generic
 from django.views.generic import DetailView, UpdateView
 from django.shortcuts import render,get_object_or_404, redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required,user_passes_test
-from .forms import NuevoViaje
-from .models import Bus, Viaje
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.utils import timezone
+from .forms import NuevoChofer, NuevoViaje
+from .models import Bus, Chofer, Viaje
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 
 #FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA LO DE DEFINIR DUPLA Y LO DE CAMBIAR ESTADO Y QUE SOLO SE MUESTREN LOS COLECTIVOS QUE ESTAN HABILITADOS PARA ANDAR
 
@@ -59,9 +62,9 @@ class AtractivoDetailViews(generic.DetailView):
 
 class CargarViajeDetailViews(UpdateView, DetailView):
     model = Viaje
-    template_name = 'cargar_viaje.html'
+    template_name = 'cambiarHora_viaje.html'
     fields = ['inicio_real', 'final_real']
-    #redirect('staffonly')
+    
 
 
 def paradas_por_recorrido(request):
@@ -108,3 +111,120 @@ def viewViaje(request):
         formulario = NuevoViaje()
     
     return render(request, 'solosuper.html', {'formulario': formulario})
+
+def newCofer(request):
+    if request.method == 'POST':
+        formulario = NuevoChofer(request.POST)
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            nuevo_objeto = Chofer(nombre=datos_formulario['nombre'] ,apellido=datos_formulario['apellido'], legajo=datos_formulario['legajo'], dni=datos_formulario['dni'])
+            nuevo_objeto.save()
+            username = datos_formulario['dni']
+            password = datos_formulario['legajo']
+            name = datos_formulario['nombre']
+            lastname = datos_formulario['apellido']
+            user, created = User.objects.get_or_create(username=username)
+            user.set_password(password)
+            user.first_name = name
+            user.last_name = lastname
+            user.is_staff = True
+            user.save()
+            
+            return redirect('solosuper')
+        else:    
+            print("not valid")
+    else:
+        formulario = NuevoViaje()
+    
+    return render(request, 'solosuper.html', {'formulario': formulario})
+
+def ActualizarInicio(request):
+    if request.method == 'POST':
+        viaje_id = request.POST.get('id')
+        viaje = Viaje.objects.get(id=viaje_id)
+        viaje.inicio_real = datetime.now()
+        viaje.save()
+        return redirect(f'/bus/staff/{viaje_id}')
+
+    return HttpResponse(status=200)
+def ActualizarFinal(request):
+    if request.method == 'POST':
+        viaje_id = request.POST.get('id')
+        viaje = Viaje.objects.get(id=viaje_id)
+        viaje.final_real = datetime.now()
+        viaje.save()
+        return redirect(f'/bus/staff/{viaje_id}')
+
+    """aca se generara un pdf con los datos pedidos(número de viaje
+            asignado, la fecha y hora de inicio y fin real del viaje, el número de unidad, el legajo y
+            nombre completo del chofer, la duración en minutos y el recorrido realizado.)"""
+class EmitirTicket(View):
+    def get(self, request, *args, **kwargs):
+        # Datos que deseas incluir en el PDF
+        datos = {
+            'nombre': 'John Doe',
+            'edad': 30,
+            'ocupacion': 'Desarrollador'
+        }
+
+        # Crea un objeto "response" para el PDF
+        response = FileResponse(self.crear_pdf(datos))
+        response['Content-Type'] = 'application/pdf'
+        response['Content-Disposition'] = 'inline; filename="archivo.pdf"'
+        return response
+
+    def crear_pdf(self, datos):
+        response = BytesIO()
+        pdf = Canvas(response)
+
+        # Agrega contenido al PDF
+        pdf.drawString(100, 750, "Información del usuario:")
+        pdf.drawString(100, 730, f"Nombre: {datos['nombre']}")
+        pdf.drawString(100, 710, f"Edad: {datos['edad']}")
+        pdf.drawString(100, 690, f"Ocupación: {datos['ocupacion']}")
+
+        # Cierra el objeto Canvas
+        pdf.showPage()
+        pdf.save()
+        response.seek(0)
+
+        return response
+#incluye la duración en minutos, la demora de inicio del viaje respecto a la hora programada,
+#y el promedio diario de ambos valores QUEDAAAAAAAAAAAAAAAAAAAAAAAAAAA PASARLO A PDF
+def GenerarReportes(request):
+    viajes = Viaje.objects.filter(fecha=date.today()).order_by('inicio_real')
+    acumuladorinicio = timedelta(0)
+    acumuladorfinal = timedelta(0)
+    contador = 0
+
+    for viaje in viajes:
+        fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
+        fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
+        fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
+        fecha_final_estimado = datetime(2023, 10, 17, viaje.final_estimado.hour, viaje.final_estimado.minute, viaje.final_estimado.second)
+        duracion = fecha_final_real - fecha_inicial_real
+        if fecha_inicial_estimado > fecha_inicial_real:
+            demorainicio = fecha_inicial_estimado - fecha_inicial_real
+        else:
+            demorainicio = fecha_inicial_real - fecha_inicial_estimado
+        
+        if fecha_final_estimado > fecha_final_real:
+            demorafinal = fecha_final_estimado - fecha_final_real
+        else:
+            demorafinal = fecha_final_real - fecha_final_estimado
+        acumuladorinicio += demorainicio
+        acumuladorfinal += demorafinal
+        contador += 1
+        print("final:",demorafinal, "inicial:",demorainicio, "duracion:", duracion)
+    if contador > 0:
+        promedioinicio = acumuladorinicio / contador
+        promediofinal = acumuladorfinal / contador
+        #FUNCIONA TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO PERO NO EL PROMEDIO Y DA NEGATIVO EL DIA RARO EN LA DEMORA
+    else:
+        promedioinicio = timedelta(0)
+        promediofinal = timedelta(0)
+
+    print("Promedio de demora inicial:", promedioinicio)
+    print("Promedio de demora final:", promediofinal)
+    return HttpResponse(f'duracion{duracion}, demora{demorainicio},demora{demorafinal}, promedioinicio{promedioinicio}, promediofinal{promediofinal}')
+        

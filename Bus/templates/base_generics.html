@@ -52,6 +52,12 @@
                 <button type="submit" class="nav-link active" aria-current="page">Cargar nuevos viajes</button>
             </li>
           </form>
+          <form method="post" action="{% url 'generarReporte' %}">
+            {% csrf_token %}
+            <li class="nav-item">
+                <button type="submit" class="nav-link active" aria-current="page">Generar Reporte diario</button>
+            </li>
+          </form>
             {% endif %}
             {% if user.is_authenticated %}
             <li class="nav-item">

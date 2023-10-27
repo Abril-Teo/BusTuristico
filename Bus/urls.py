@@ -17,5 +17,10 @@ urlpatterns = [
     path('staff/', user_passes_test(lambda u: u.is_staff)(views.staffonly), name='staffonly'),
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
     path('staff/<int:pk>', views.CargarViajeDetailViews.as_view(), name='cargar_viaje'),
+    path('cargarchoffer/', views.newCofer, name='nuevoChofer'),
+    path('ActualizarInicio/', views.ActualizarInicio, name='actualizarinicio'),
+    path('ActualizarFinal/', views.ActualizarFinal, name='actualizarfinal'),
+    path('emitirTicket/', views.EmitirTicket.as_view(), name='EmitirTicket'),
+    path('generarReportes/', views.GenerarReportes, name='generarReporte'),
 ]
 
