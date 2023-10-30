@@ -9,6 +9,7 @@
     
     <body>
         <h1>Editar Viaje</h1>
+        <div>
         {% if viaje.inicio_real == null %}
             <form method="post" action="{% url 'actualizarinicio'%}">
                 {% csrf_token %}
@@ -16,13 +17,16 @@
                 <button type="submit">EMPEZAR VIAJE</button>
             </form>
         {% else %}
+        <li><strong>El viaje empezo a las:</strong> {{ viaje.inicio_real }}</li>
         {% endif %}
         {% if viaje.final_real == null %}
+        {% if viaje.inicio_real != null %}
             <form method="post" action="{% url 'actualizarfinal'%}">
                 {% csrf_token %}
                 <input type="hidden" name="id" value="{{ viaje.id }}">
                 <button type="submit">FINALIZAR VIAJE</button>
             </form>
+        {% endif %}
         {% else %}
             <li><strong>El viaje finalizo a las:</strong> {{ viaje.final_real }}</li>
         {% endif %}
@@ -30,6 +34,7 @@
         {% if viaje.final_real != null and viaje.inicio_real != null %}
             <a href="{% url 'EmitirTicket' %}" class="btn" target="_blank">Generar PDF</a>
         {% endif %}
+    </div>
     </body>
 </ul>
 {% endblock %}
