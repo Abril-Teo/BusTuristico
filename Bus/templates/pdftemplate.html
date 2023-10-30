@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        p {
+            margin: 0;
+        }
+    </style>
+
+<body>
+
+    <div class="container">
+        <h1>Informe PDF</h1>
+        
+        {% for viaje in viajes %}
+        <p>Viaje: {{ viaje.nro_viaje }}</p>
+        <p>Recorrido: {{ viaje.recorrido }}</p>
+        <p>Bus: {{ viaje.bus }}</p>
+        <p>Chofer: {{ viaje.chofer }}</p>
+        <p>Demora Inicio: {{ viaje.inicio_real|calcular_demora_inicio(viaje.inicio_estimado) }}</p>
+        <p>estimado: {{ viaje.inicio_estimado }}</p>
+        <p>Duración: {{ duracion }}</p>
+        <p>Demora Inicial: {{ inicial }}</p>
+        <p>Demora Final: {{ final }}</p>
+        <br>
+       <hr>
+       <br>
+        {% endfor %}
+        <p>Promedio Inicio: {{ promedioinicio }}</p>
+        <p>Promedio Final: {{ promediofinal }}</p>
+    </div>
+</body>
+</html>

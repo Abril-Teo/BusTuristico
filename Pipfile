@@ -9,6 +9,7 @@ django-colorfield = "*"
 django-star-ratings = "*"
 reportlab = "*"
 tk = "*"
+weasyprint = "*"
 
 [dev-packages]
 

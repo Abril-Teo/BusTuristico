@@ -1,18 +1,23 @@
-from datetime import date, timedelta, timezone
+from datetime import date, timedelta
 from datetime import datetime
-from io import BytesIO, StringIO
+from io import BytesIO
 from tkinter import Canvas
-import tkinter
 from django.views import View, generic
 from django.views.generic import DetailView, UpdateView
-from django.shortcuts import render,get_object_or_404, redirect
+from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import permission_required,user_passes_test
+from django.contrib.auth.decorators import user_passes_test
+
+from Bus.templatetags import jinja2_custom_filters
 from .forms import NuevoChofer, NuevoViaje
-from .models import Bus, Chofer, Viaje
+from .models import Chofer, Viaje
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+import jinja2
+import pdfkit
+
 
 #FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA LO DE DEFINIR DUPLA Y LO DE CAMBIAR ESTADO Y QUE SOLO SE MUESTREN LOS COLECTIVOS QUE ESTAN HABILITADOS PARA ANDAR
 
@@ -213,18 +218,41 @@ def GenerarReportes(request):
         else:
             demorafinal = fecha_final_real - fecha_final_estimado
         acumuladorinicio += demorainicio
+        print(acumuladorinicio)
         acumuladorfinal += demorafinal
         contador += 1
-        print("final:",demorafinal, "inicial:",demorainicio, "duracion:", duracion)
     if contador > 0:
         promedioinicio = acumuladorinicio / contador
         promediofinal = acumuladorfinal / contador
-        #FUNCIONA TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO PERO NO EL PROMEDIO Y DA NEGATIVO EL DIA RARO EN LA DEMORA
+        #FUNCIONA TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO PERO NO EL PROMEDIO
     else:
         promedioinicio = timedelta(0)
         promediofinal = timedelta(0)
+        
 
     print("Promedio de demora inicial:", promedioinicio)
     print("Promedio de demora final:", promediofinal)
+    env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
+    jinja2_custom_filters.register_custom_filters(env)  # Llama a la función para registrar los filtros personalizados
+    template = env.get_template('pdftemplate.html')
+    html = template.render({"viajes":viajes,"final":demorafinal, "inicial":demorainicio, "duracion":duracion, "promedioinicio":promedioinicio, "promediofinal":promediofinal})
+    #conseguir la forma de mandarle todos los demorainicio, aca manda solo el ultimo
+    
+    options = {
+        'page-size': 'Letter',
+        'encoding': "UTF-8",
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in'
+    }
+    
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="nombre_del_archivo.pdf"'#ponerle nombre reporte y dia
+
+    return response
+
     return HttpResponse(f'duracion{duracion}, demora{demorainicio},demora{demorafinal}, promedioinicio{promedioinicio}, promediofinal{promediofinal}')
         
