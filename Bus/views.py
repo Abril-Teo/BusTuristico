@@ -198,45 +198,51 @@ class EmitirTicket(View):
 #y el promedio diario de ambos valores QUEDAAAAAAAAAAAAAAAAAAAAAAAAAAA PASARLO A PDF
 def GenerarReportes(request):
     viajes = Viaje.objects.filter(fecha=date.today()).order_by('inicio_real')
-    acumuladorinicio = timedelta(0)
-    acumuladorfinal = timedelta(0)
-    contador = 0
+    diferencias = []
 
     for viaje in viajes:
         fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
         fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
         fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
-        fecha_final_estimado = datetime(2023, 10, 17, viaje.final_estimado.hour, viaje.final_estimado.minute, viaje.final_estimado.second)
         duracion = fecha_final_real - fecha_inicial_real
         if fecha_inicial_estimado > fecha_inicial_real:
             demorainicio = fecha_inicial_estimado - fecha_inicial_real
+            diferencias.append(demorainicio.total_seconds())  
         else:
             demorainicio = fecha_inicial_real - fecha_inicial_estimado
-        
-        if fecha_final_estimado > fecha_final_real:
-            demorafinal = fecha_final_estimado - fecha_final_real
-        else:
-            demorafinal = fecha_final_real - fecha_final_estimado
-        acumuladorinicio += demorainicio
-        print(acumuladorinicio)
-        acumuladorfinal += demorafinal
-        contador += 1
-    if contador > 0:
-        promedioinicio = acumuladorinicio / contador
-        promediofinal = acumuladorfinal / contador
-        #FUNCIONA TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO PERO NO EL PROMEDIO
+            diferencias.append(-demorainicio.total_seconds())  
+
+    promedio_diferencias = timedelta(0)
+
+    for diferencia_segundos in diferencias:
+        diferencia_timedelta = timedelta(seconds=diferencia_segundos)
+        promedio_diferencias += diferencia_timedelta
+
+    cantidad_viajes = len(diferencias)
+    if cantidad_viajes > 0:
+        promedio_diferencias = promedio_diferencias / cantidad_viajes
+
+    promedio_en_minutos = round(promedio_diferencias.total_seconds() / 60)
+    promedio_horas = promedio_en_minutos // 60
+    promedio_minutos = promedio_en_minutos % 60
+
+    if promedio_en_minutos > 0:
+        promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos adelantado"
+    elif promedio_en_minutos < 0:
+        promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos demorado"
     else:
-        promedioinicio = timedelta(0)
-        promediofinal = timedelta(0)
+        promedioinicio = "En hora"
+
+    print("promedio en minutos:", promedio_en_minutos)
+    print("Promedio Inicio:", promedioinicio)
         
 
-    print("Promedio de demora inicial:", promedioinicio)
-    print("Promedio de demora final:", promediofinal)
     env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
-    jinja2_custom_filters.register_custom_filters(env)  # Llama a la función para registrar los filtros personalizados
+    jinja2_custom_filters.register_custom_filters(env) 
     template = env.get_template('pdftemplate.html')
-    html = template.render({"viajes":viajes,"final":demorafinal, "inicial":demorainicio, "duracion":duracion, "promedioinicio":promedioinicio, "promediofinal":promediofinal})
-    #conseguir la forma de mandarle todos los demorainicio, aca manda solo el ultimo
+    fecha = datetime.now()
+    dia = fecha.date().strftime("%d-%m-%Y")
+    html = template.render({"dia":dia,"viajes":viajes, "duracion":duracion, "promedioinicio":promedioinicio})
     
     options = {
         'page-size': 'Letter',
@@ -250,9 +256,8 @@ def GenerarReportes(request):
     config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
     pdf = pdfkit.from_string(html, False, configuration=config, options=options)
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="nombre_del_archivo.pdf"'#ponerle nombre reporte y dia
+    response['Content-Disposition'] = 'attachment; filename="Reporte_diario.pdf"'
 
     return response
 
-    return HttpResponse(f'duracion{duracion}, demora{demorainicio},demora{demorafinal}, promedioinicio{promedioinicio}, promediofinal{promediofinal}')
         
