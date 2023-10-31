@@ -2,12 +2,24 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-ACA PUEDE ENTRAR UN SUPERUSER PODEMOS AGREGAR COMO LAS ALARMAS QUE SEAN SEMANALES Y SE CREAN PARA TODA LA SEMANA IGUALES
-<form method="post">
+{% if correcto == "" %}
+<form method="post" >
     {% csrf_token %}
     {{ formulario.as_p }}
     <button type="submit">Enviar</button>
+    <input type="checkbox" name="semanal" id="semanal-checkbox" value="False"> Hacerlo semanal
 </form>
+<script>
+  document.getElementById('semanal-checkbox').addEventListener('change', function() {
+      if (this.checked) {
+          this.value = 'True';
+      } else {
+          this.value = 'False';
+      }
+  });
+</script>
+
+
 <form method="post" action="{% url 'nuevoChofer' %}">
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo chofer</button>
@@ -20,7 +32,9 @@ ACA PUEDE ENTRAR UN SUPERUSER PODEMOS AGREGAR COMO LAS ALARMAS QUE SEAN SEMANALE
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo Recorrido</button>
 </form>
-  
+{%else%}
+  <h3>{{ correcto }}</h3>
+{%endif%}
    
 {% endblock %}
 

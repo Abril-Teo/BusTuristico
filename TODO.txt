@@ -1,0 +1,5 @@
+- habilitar e inabilitar buses(alguien?)
+- hacer la de crear viaje y que se cree para toda la semana(fillol)
+- Hacer mas lindos y responsive los botones del cargar viaje del chofer(timo)
+- hacer mas lindo los pdf(timo)
+- CRUD de los que quedan (teo y ravetti)

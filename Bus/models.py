@@ -62,8 +62,8 @@ class Recorrido(models.Model):
     nombre = models.CharField(max_length=50)
     hex_color = ColorField(default= '#FF0000')
     duracionAprox = models.IntegerField("Duracion en minutos")
-    horaInicioAprox = models.DateTimeField()
-    horaFinalizacionAprox = models.DateTimeField()
+    horaInicioAprox = models.TimeField()
+    horaFinalizacionAprox = models.TimeField()
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:

@@ -74,9 +74,10 @@ class CargarViajeDetailViews(UpdateView, DetailView):
 
 def paradas_por_recorrido(request):
     if request.method == 'POST':
-        nombre_recorrido = request.POST.get('nombre_recorrido')
-        paradas_del_recorrido = ParadaxRecorrido.objects.filter(recorrido__nombre=nombre_recorrido).order_by('nroParada')
-        return render(request, 'paradas_por_recorrido.html', {'paradas_del_recorrido': paradas_del_recorrido})
+        id_recorrido = request.POST.get('nombre_recorrido')
+        recorrido = Recorrido.objects.get(id=id_recorrido)
+        paradas_del_recorrido = ParadaxRecorrido.objects.filter(recorrido__id=id_recorrido).order_by('nroParada')
+        return render(request, 'paradas_por_recorrido.html', {'paradas_del_recorrido': paradas_del_recorrido, 'recorrido': recorrido})
     else:
         return render(request, 'index.html')
     
@@ -102,9 +103,12 @@ def staffonly(request):
     #return render(request, 'solostaff.html')
 
 
-def viewViaje(request):
+"""def viewViaje(request):
     if request.method == 'POST':
+        issemanal = request.POST.get('semanal')
+        print(issemanal)
         formulario = NuevoViaje(request.POST)
+        #ACA DECLARAR LO DE LA SEMANA
         if formulario.is_valid():
             datos_formulario = formulario.cleaned_data
             nuevo_objeto = Viaje(nro_viaje=datos_formulario['nroViaje'] ,fecha=datos_formulario['fecha'], inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'],recorrido=datos_formulario['recorrido'])
@@ -115,9 +119,41 @@ def viewViaje(request):
     else:
         formulario = NuevoViaje()
     
+    return render(request, 'solosuper.html', {'formulario': formulario})"""
+
+def viewViaje(request):
+    if request.method == 'POST':
+        formulario = NuevoViaje(request.POST)
+        correcto = ""
+
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            fecha_inicial = datos_formulario['fecha']
+            nro_viaje = datos_formulario['nroViaje']
+
+            # Registra un viaje
+            nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
+            nuevo_objeto.save()
+
+            # Verifica si se seleccionó la opción 'Hacerlo semanal'
+            if 'semanal' in request.POST and request.POST['semanal'] == 'True':
+                print('es semanaaaaaaaal')
+                # Si es semanal, registra 6 viajes adicionales durante 7 días consecutivos
+                for i in range(6):
+                    fecha_inicial += timedelta(days=1)
+                    nro_viaje += 1
+                    nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
+                    nuevo_objeto.save()
+                return render(request, 'solosuper.html', {'correcto':"Se registro con exito los 7 viajes"})
+            return render(request, 'solosuper.html', {'correcto':"Se registro con exito el viaje"})
+        else:
+            print("Formulario no válido")
+    else:
+        formulario = NuevoViaje()
+
     return render(request, 'solosuper.html', {'formulario': formulario})
 
-def newCofer(request):
+def newChofer(request):
     if request.method == 'POST':
         formulario = NuevoChofer(request.POST)
         if formulario.is_valid():
@@ -163,101 +199,107 @@ def ActualizarFinal(request):
     """aca se generara un pdf con los datos pedidos(número de viaje
             asignado, la fecha y hora de inicio y fin real del viaje, el número de unidad, el legajo y
             nombre completo del chofer, la duración en minutos y el recorrido realizado.)"""
-class EmitirTicket(View):
-    def get(self, request, *args, **kwargs):
-        # Datos que deseas incluir en el PDF
-        datos = {
-            'nombre': 'John Doe',
-            'edad': 30,
-            'ocupacion': 'Desarrollador'
-        }
-
-        # Crea un objeto "response" para el PDF
-        response = FileResponse(self.crear_pdf(datos))
-        response['Content-Type'] = 'application/pdf'
-        response['Content-Disposition'] = 'inline; filename="archivo.pdf"'
-        return response
-
-    def crear_pdf(self, datos):
-        response = BytesIO()
-        pdf = Canvas(response)
-
-        # Agrega contenido al PDF
-        pdf.drawString(100, 750, "Información del usuario:")
-        pdf.drawString(100, 730, f"Nombre: {datos['nombre']}")
-        pdf.drawString(100, 710, f"Edad: {datos['edad']}")
-        pdf.drawString(100, 690, f"Ocupación: {datos['ocupacion']}")
-
-        # Cierra el objeto Canvas
-        pdf.showPage()
-        pdf.save()
-        response.seek(0)
-
-        return response
-#incluye la duración en minutos, la demora de inicio del viaje respecto a la hora programada,
-#y el promedio diario de ambos valores QUEDAAAAAAAAAAAAAAAAAAAAAAAAAAA PASARLO A PDF
-def GenerarReportes(request):
-    viajes = Viaje.objects.filter(fecha=date.today()).order_by('inicio_real')
-    diferencias = []
-
-    for viaje in viajes:
+def EmitirTicket(request):
+    if request.method == 'POST':
+        id_viaje = request.POST.get('id')
+        viaje = Viaje.objects.get(id=id_viaje)
+        
+        env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
+        template = env.get_template('ticketTemplate.html')
+        fecha = viaje.fecha
+        dia = fecha.strftime("%d-%m-%Y")
+        nombrecompleto = f'{viaje.chofer.nombre} {viaje.chofer.apellido}' 
         fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
         fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
-        fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
         duracion = fecha_final_real - fecha_inicial_real
-        if fecha_inicial_estimado > fecha_inicial_real:
-            demorainicio = fecha_inicial_estimado - fecha_inicial_real
-            diferencias.append(demorainicio.total_seconds())  
-        else:
-            demorainicio = fecha_inicial_real - fecha_inicial_estimado
-            diferencias.append(-demorainicio.total_seconds())  
+        duracion_en_minutos = round(duracion.total_seconds() / 60)
+        hoy = datetime.now()
+        
+        html = template.render({"nroViaje": viaje.nro_viaje, "fecha": dia, "inicio": viaje.inicio_real, "final": viaje.final_real, "nro_unidad": viaje.bus.numUnidad, "legajo": viaje.chofer.legajo, "nombre": nombrecompleto, "recorrido": viaje.recorrido.nombre, "duracion": duracion_en_minutos, "fechaHoy": hoy})
+        
+        options = {
+            'page-size': 'Letter',
+            'encoding': "UTF-8",
+            'margin-top': '0.75in',
+            'margin-right': '0.75in',
+            'margin-bottom': '0.75in',
+            'margin-left': '0.75in'
+        }
+        
+        config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+        pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Ticket.pdf"'
 
-    promedio_diferencias = timedelta(0)
-
-    for diferencia_segundos in diferencias:
-        diferencia_timedelta = timedelta(seconds=diferencia_segundos)
-        promedio_diferencias += diferencia_timedelta
-
-    cantidad_viajes = len(diferencias)
-    if cantidad_viajes > 0:
-        promedio_diferencias = promedio_diferencias / cantidad_viajes
-
-    promedio_en_minutos = round(promedio_diferencias.total_seconds() / 60)
-    promedio_horas = promedio_en_minutos // 60
-    promedio_minutos = promedio_en_minutos % 60
-
-    if promedio_en_minutos > 0:
-        promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos adelantado"
-    elif promedio_en_minutos < 0:
-        promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos demorado"
-    else:
-        promedioinicio = "En hora"
-
-    print("promedio en minutos:", promedio_en_minutos)
-    print("Promedio Inicio:", promedioinicio)
+        return response
         
 
-    env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
-    jinja2_custom_filters.register_custom_filters(env) 
-    template = env.get_template('pdftemplate.html')
-    fecha = datetime.now()
-    dia = fecha.date().strftime("%d-%m-%Y")
-    html = template.render({"dia":dia,"viajes":viajes, "duracion":duracion, "promedioinicio":promedioinicio})
-    
-    options = {
-        'page-size': 'Letter',
-        'encoding': "UTF-8",
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in'
-    }
-    
-    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-    pdf = pdfkit.from_string(html, False, configuration=config, options=options)
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Reporte_diario.pdf"'
+def GenerarReportes(request):
+    viajes = Viaje.objects.filter(fecha=date.today()).order_by('inicio_real')
+    if len(viajes) != 0:
+        diferencias = []
+        acumuladorduracion = 0
 
-    return response
+        for viaje in viajes:
+            fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
+            fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
+            fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
+            duracion = fecha_final_real - fecha_inicial_real
+            duracion_en_minutos = round(duracion.total_seconds() / 60)
+            acumuladorduracion += duracion_en_minutos
+            if fecha_inicial_estimado > fecha_inicial_real:
+                demorainicio = fecha_inicial_estimado - fecha_inicial_real
+                diferencias.append(demorainicio.total_seconds())  
+            else:
+                demorainicio = fecha_inicial_real - fecha_inicial_estimado
+                diferencias.append(-demorainicio.total_seconds())  
+
+        suma_diferencias = timedelta(0)
+
+        for diferencia_segundos in diferencias:
+            diferencia_timedelta = timedelta(seconds=diferencia_segundos)
+            suma_diferencias += diferencia_timedelta
+            
+
+        cantidad_viajes = len(diferencias)
+        if cantidad_viajes > 0:
+            promedio_diferencias = suma_diferencias / cantidad_viajes
+            promedio_duracion = int(acumuladorduracion / cantidad_viajes)
+
+        promedio_en_minutos = round(promedio_diferencias.total_seconds() / 60)
+        promedio_horas = promedio_en_minutos // 60
+        promedio_minutos = promedio_en_minutos % 60
+
+        if promedio_en_minutos > 0:
+            promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos adelantado"
+        elif promedio_en_minutos < 0:
+            promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos demorado"
+        else:
+            promedioinicio = "En hora"
+            
+
+        env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
+        jinja2_custom_filters.register_custom_filters(env) 
+        template = env.get_template('pdftemplate.html')
+        fecha = datetime.now()
+        dia = fecha.date().strftime("%d-%m-%Y")
+        html = template.render({"dia":dia,"viajes":viajes, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
+        
+        options = {
+            'page-size': 'Letter',
+            'encoding': "UTF-8",
+            'margin-top': '0.75in',
+            'margin-right': '0.75in',
+            'margin-bottom': '0.75in',
+            'margin-left': '0.75in'
+        }
+        
+        config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+        pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="Reporte_diario.pdf"'
+
+        return response
+    return HttpResponse("No hay viajes en el dia")
 
         

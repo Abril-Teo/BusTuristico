@@ -38,13 +38,13 @@
         <p>Demora Inicio: {{ viaje.inicio_real|calcular_demora_inicio(viaje.inicio_estimado) }}</p>
         <p>Inicio estimado: {{ viaje.inicio_estimado }}</p>
         <p>Inicio real: {{ viaje.inicio_real }}</p>
-        <p>Duración: {{ duracion }}</p>
+        <p>Duración: {{ viaje.inicio_real|calcular_duracion(viaje.final_real) }} minutos</p>
         <br>
        <hr>
        <br>
         {% endfor %}
         <p>Promedio Inicio: {{ promedioinicio }}</p>
-        <p>Promedio Duracion: Hacer promedio duracion</p>
+        <p>Promedio Duracion: {{ promedioduracion }} minutos</p>
     </div>
 </body>
 </html>

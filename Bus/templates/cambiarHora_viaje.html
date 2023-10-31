@@ -9,8 +9,8 @@
     
     <body>
         <h1>Editar Viaje</h1>
-        {% load custom_filters %}
-        el viaje esta {{ viaje.inicio_real|calcular_demora_inicio:viaje.inicio_estimado }}
+        
+        
         <div>
         {% if viaje.inicio_real == null %}
             <form method="post" action="{% url 'actualizarinicio'%}">
@@ -32,10 +32,14 @@
         {% else %}
             <li><strong>El viaje finalizo a las:</strong> {{ viaje.final_real }}</li>
         {% endif %}
-        <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
         {% if viaje.final_real != null and viaje.inicio_real != null %}
-            <a href="{% url 'EmitirTicket' %}" class="btn" target="_blank">Generar PDF</a>
+            <form method="post" action="{% url 'EmitirTicket'%}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ viaje.id }}">
+                <button type="submit"  target="_blank">Generar PDF</button>
+            </form>
         {% endif %}
+        
     </div>
     </body>
 </ul>
