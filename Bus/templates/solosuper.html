@@ -2,7 +2,6 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-{% if correcto == "" %}
 <form method="post" >
     {% csrf_token %}
     {{ formulario.as_p }}
@@ -32,9 +31,5 @@
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo Recorrido</button>
 </form>
-{%else%}
-  <h3>{{ correcto }}</h3>
-{%endif%}
-   
 {% endblock %}
 

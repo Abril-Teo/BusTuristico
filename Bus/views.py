@@ -19,7 +19,6 @@ import jinja2
 import pdfkit
 
 
-#FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA LO DE DEFINIR DUPLA Y LO DE CAMBIAR ESTADO Y QUE SOLO SE MUESTREN LOS COLECTIVOS QUE ESTAN HABILITADOS PARA ANDAR
 
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
@@ -34,10 +33,10 @@ def logincomprobacion(request):
         if user is not None:
             if user.is_superuser:
                 login(request,user)
-                return redirect('solosuper')
+                return redirect('index')
             if user.is_staff:
                 login(request, user)
-                return HttpResponseRedirect('/bus/staff/')
+                return redirect('index')
 
             #  ....
         else:
@@ -100,57 +99,34 @@ def staffonly(request):
         return render(request, 'solostaff.html', {'viajes_choffer': viajes_del_chofer})
     else:
         return render(request, 'index.html')
-    #return render(request, 'solostaff.html')
-
-
-"""def viewViaje(request):
-    if request.method == 'POST':
-        issemanal = request.POST.get('semanal')
-        print(issemanal)
-        formulario = NuevoViaje(request.POST)
-        #ACA DECLARAR LO DE LA SEMANA
-        if formulario.is_valid():
-            datos_formulario = formulario.cleaned_data
-            nuevo_objeto = Viaje(nro_viaje=datos_formulario['nroViaje'] ,fecha=datos_formulario['fecha'], inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'],recorrido=datos_formulario['recorrido'])
-            nuevo_objeto.save()
-            return redirect('solosuper')
-        else:    
-            print("not valid")
-    else:
-        formulario = NuevoViaje()
-    
-    return render(request, 'solosuper.html', {'formulario': formulario})"""
 
 def viewViaje(request):
     if request.method == 'POST':
         formulario = NuevoViaje(request.POST)
-        correcto = ""
 
         if formulario.is_valid():
             datos_formulario = formulario.cleaned_data
             fecha_inicial = datos_formulario['fecha']
             nro_viaje = datos_formulario['nroViaje']
 
-            # Registra un viaje
             nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
             nuevo_objeto.save()
 
-            # Verifica si se seleccionó la opción 'Hacerlo semanal'
             if 'semanal' in request.POST and request.POST['semanal'] == 'True':
                 print('es semanaaaaaaaal')
-                # Si es semanal, registra 6 viajes adicionales durante 7 días consecutivos
                 for i in range(6):
                     fecha_inicial += timedelta(days=1)
                     nro_viaje += 1
                     nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
                     nuevo_objeto.save()
-                return render(request, 'solosuper.html', {'correcto':"Se registro con exito los 7 viajes"})
-            return render(request, 'solosuper.html', {'correcto':"Se registro con exito el viaje"})
+                formulario = NuevoViaje()
+            formulario = NuevoViaje()
+            return render(request, 'solosuper.html', {"formulario": formulario})
         else:
             print("Formulario no válido")
     else:
         formulario = NuevoViaje()
-
+    
     return render(request, 'solosuper.html', {'formulario': formulario})
 
 def newChofer(request):
@@ -239,20 +215,25 @@ def GenerarReportes(request):
     if len(viajes) != 0:
         diferencias = []
         acumuladorduracion = 0
+        promedio_diferencias = timedelta(0)
+        promedio_duracion = 0
+        viajesValidos = []
 
         for viaje in viajes:
-            fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
-            fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
-            fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
-            duracion = fecha_final_real - fecha_inicial_real
-            duracion_en_minutos = round(duracion.total_seconds() / 60)
-            acumuladorduracion += duracion_en_minutos
-            if fecha_inicial_estimado > fecha_inicial_real:
-                demorainicio = fecha_inicial_estimado - fecha_inicial_real
-                diferencias.append(demorainicio.total_seconds())  
-            else:
-                demorainicio = fecha_inicial_real - fecha_inicial_estimado
-                diferencias.append(-demorainicio.total_seconds())  
+            if viaje.inicio_real is not None and viaje.final_real is not None:
+                viajesValidos.append(viaje)
+                fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
+                fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
+                fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
+                duracion = fecha_final_real - fecha_inicial_real
+                duracion_en_minutos = round(duracion.total_seconds() / 60)
+                acumuladorduracion += duracion_en_minutos
+                if fecha_inicial_estimado > fecha_inicial_real:
+                    demorainicio = fecha_inicial_estimado - fecha_inicial_real
+                    diferencias.append(demorainicio.total_seconds())  
+                else:
+                    demorainicio = fecha_inicial_real - fecha_inicial_estimado
+                    diferencias.append(-demorainicio.total_seconds())  
 
         suma_diferencias = timedelta(0)
 
@@ -273,7 +254,7 @@ def GenerarReportes(request):
         if promedio_en_minutos > 0:
             promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos adelantado"
         elif promedio_en_minutos < 0:
-            promedioinicio = f"{promedio_horas} horas y {promedio_minutos} minutos demorado"
+            promedioinicio = f"{-promedio_horas} horas y {promedio_minutos} minutos demorado"
         else:
             promedioinicio = "En hora"
             
@@ -283,7 +264,7 @@ def GenerarReportes(request):
         template = env.get_template('pdftemplate.html')
         fecha = datetime.now()
         dia = fecha.date().strftime("%d-%m-%Y")
-        html = template.render({"dia":dia,"viajes":viajes, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
+        html = template.render({"dia":dia,"viajes":viajesValidos, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
         
         options = {
             'page-size': 'Letter',
