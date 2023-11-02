@@ -10,6 +10,8 @@ django-star-ratings = "*"
 reportlab = "*"
 tk = "*"
 weasyprint = "*"
+jinja2 = "*"
+pdfkit = "*"
 
 [dev-packages]
 
