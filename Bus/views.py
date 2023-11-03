@@ -1,7 +1,11 @@
 from datetime import date, timedelta
 from datetime import datetime
-from io import BytesIO
-from tkinter import Canvas
+
+from django.shortcuts import render, redirect
+from .models import Bus, CambioEstado, Estado 
+
+#from io import BytesIO
+#from tkinter import Canvas
 from django.views import View, generic
 from django.views.generic import DetailView, UpdateView
 from django.shortcuts import render,redirect
@@ -10,8 +14,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 
 from Bus.templatetags import jinja2_custom_filters
-from .forms import NuevoChofer, NuevoViaje
-from .models import Chofer, Viaje
+from .forms import *
+from .models import Chofer, Viaje, Bus, Recorrido, Parada
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
@@ -20,10 +24,13 @@ import pdfkit
 
 
 
+
+
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
 
 def vista_login(request):
     return render(request, 'login.html')
+
 
 def logincomprobacion(request):
     if request.method == 'POST':
@@ -37,8 +44,6 @@ def logincomprobacion(request):
             if user.is_staff:
                 login(request, user)
                 return redirect('index')
-
-            #  ....
         else:
             return render(request, 'login.html', {'error': 'Usuario o contraseña incorrectos'})
 
@@ -94,9 +99,15 @@ def superuseronly(request):
 @user_passes_test(lambda u: u.is_staff)
 def staffonly(request):
     if request.method == 'POST':
-        dni_chofer = request.user.username
-        viajes_del_chofer = Viaje.objects.filter(chofer__dni=dni_chofer).filter(fecha=date.today()).order_by('inicio_estimado')
-        return render(request, 'solostaff.html', {'viajes_choffer': viajes_del_chofer})
+        if request.user.is_superuser:
+            print("super")
+            viajesHoy = Viaje.objects.filter(fecha=date.today()).order_by('inicio_estimado')
+            return render(request, 'solostaff.html', {'viajes_choffer': viajesHoy})
+        if request.user.is_staff:
+            print("staff")
+            dni_chofer = request.user.username
+            viajes_del_chofer = Viaje.objects.filter(chofer__dni=dni_chofer).filter(fecha=date.today()).order_by('inicio_estimado')
+            return render(request, 'solostaff.html', {'viajes_choffer': viajes_del_chofer})
     else:
         return render(request, 'index.html')
 
@@ -154,6 +165,72 @@ def newChofer(request):
         formulario = NuevoViaje()
     
     return render(request, 'solosuper.html', {'formulario': formulario})
+
+
+def newBus(request):
+    if request.method == 'POST':
+        formulario = NuevoBus(request.POST)
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            nuevo_objeto = Bus(patente=datos_formulario['patente'] ,numUnidad=datos_formulario['numUnidad'], fechaCompra=datos_formulario['fechaCompra'], estado=datos_formulario['estado'])
+            nuevo_objeto.save()
+            return redirect('solosuper')
+        else:    
+            print("not valid")
+    else:
+        formulario = NuevoViaje()
+    
+    return render(request, 'solosuper.html', {'formulario': formulario})
+
+
+def newRecorrido(request):
+    if request.method == 'POST':
+        formulario = NuevoRecorrido(request.POST)
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            nuevo_objeto = Recorrido(nombre=datos_formulario['nombre'] ,hex_color=datos_formulario['color'], duracionAprox=datos_formulario['duracionAprox'],
+                                      horaInicioAprox=datos_formulario['horaInicioAprox'], horaFinalizacionAprox=datos_formulario['horaFinalizacionAprox'], frecuencia=datos_formulario['frecuencia'])
+            nuevo_objeto.save()
+            return redirect('solosuper')
+        else:    
+            print("not valid")
+    else:
+        formulario = NuevoViaje()
+    
+    return render(request, 'solosuper.html', {'formulario': formulario})
+
+
+def newParada(request):
+    if request.method == 'POST':
+        formulario = NuevaParada(request.POST)
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            nuevo_objeto = Parada(nombre=datos_formulario['nombre'] ,calle=datos_formulario['calle'], numero=datos_formulario['numero'],
+                                      descripcion=datos_formulario['descripcion'], foto=datos_formulario['foto'], atractivos=datos_formulario['atractivos'])
+            nuevo_objeto.save()
+            return redirect('solosuper')
+        else:    
+            print("not valid")
+    else:
+        formulario = NuevoViaje()
+    
+    return render(request, 'solosuper.html', {'formulario': formulario})
+
+
+def newParadaXRecorrido(request):
+    if request.method == 'POST':
+        formulario = AgregarParada(request.POST)
+        if formulario.is_valid():
+            datos_formulario = formulario.cleaned_data
+            nuevo_objeto = ParadaxRecorrido(nroParada=datos_formulario['nroParada'] ,llegadaEstimada=datos_formulario['llegadaEstimada'], recorrido=datos_formulario['recorrido'], parada=datos_formulario['parada'])
+            nuevo_objeto.save()
+            return redirect('solosuper')
+        else:    
+            print("not valid")
+    else:
+        formulario = NuevoViaje()
+    return render(request, 'solosuper.html', {'formulario': formulario})
+
 
 def ActualizarInicio(request):
     if request.method == 'POST':
@@ -258,29 +335,63 @@ def GenerarReportes(request):
         else:
             promedioinicio = "En hora"
             
+        if viajesValidos != []:
+            env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
+            jinja2_custom_filters.register_custom_filters(env) 
+            template = env.get_template('pdftemplate.html')
+            fecha = datetime.now()
+            dia = fecha.date().strftime("%d-%m-%Y")
+            html = template.render({"dia":dia,"viajes":viajesValidos, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
+            
+            options = {
+                'page-size': 'Letter',
+                'encoding': "UTF-8",
+                'margin-top': '0.75in',
+                'margin-right': '0.75in',
+                'margin-bottom': '0.75in',
+                'margin-left': '0.75in'
+            }
+            
+            config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+            pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Reporte_diario.pdf"'
 
-        env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
-        jinja2_custom_filters.register_custom_filters(env) 
-        template = env.get_template('pdftemplate.html')
-        fecha = datetime.now()
-        dia = fecha.date().strftime("%d-%m-%Y")
-        html = template.render({"dia":dia,"viajes":viajesValidos, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
-        
-        options = {
-            'page-size': 'Letter',
-            'encoding': "UTF-8",
-            'margin-top': '0.75in',
-            'margin-right': '0.75in',
-            'margin-bottom': '0.75in',
-            'margin-left': '0.75in'
-        }
-        
-        config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-        pdf = pdfkit.from_string(html, False, configuration=config, options=options)
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="Reporte_diario.pdf"'
+            return response
+        return HttpResponse("No hay viajes en el dia")
 
-        return response
-    return HttpResponse("No hay viajes en el dia")
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def cambiar_estado_bus(request, bus_id):
+    if request.method == 'POST':
+        bus = Bus.objects.get(pk=bus_id)
+        nuevo_estado_habilitado = not bus.isHabilitado()
         
+        # Crear un nuevo registro de cambio de estado
+        cambio_estado = CambioEstado(estadoAnterior=bus.estado, estadoNuevo=nuevo_estado_habilitado, motivo="Cambio de estado por administrador")
+        cambio_estado.save()
+        
+        # Actualizar el estado del autobús
+        bus.estado = cambio_estado
+        bus.save()
+        
+        return redirect('cambiar_estado_bus')  # Reemplaza 'pagina_deseada' con el nombre de tu vista
+
+    bus = Bus.objects.get(pk=bus_id)
+    return render(request, 'cambiar_estado_bus.html', {'bus': bus})
+
+def cambiar_contrasenia(request):
+    if request.method == 'POST':
+        username = request.get('username')
+        password = request.get('password')
+        userauth = authenticate(request, username=username, password=password)
+        if userauth is not None:
+            newpassword = request.get('newPass')
+            user = request.user
+            user.set_password(password)
+            user.save()
+
+
+
+

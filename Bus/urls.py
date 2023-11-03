@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
     path('Recorridos/RecorridoDetalle/<int:pk>', views.ParadasDetailViews.as_view(), name='parada-detail'),
     path('Recorridos/atractivos/<int:pk>', views.AtractivoDetailViews.as_view(), name='atractivo-detail'),
     path("Recorridos/", views.RecorridosListView.as_view(), name="recorridos"),
@@ -18,9 +17,15 @@ urlpatterns = [
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
     path('staff/<int:pk>', views.CargarViajeDetailViews.as_view(), name='cargar_viaje'),
     path('cargarchoffer/', views.newChofer, name='nuevoChofer'),
+    path('cargarbus/', views.newBus, name='nuevoBus'),
+    path('cargarrecorrido/', views.newRecorrido, name='nuevoRecorrido'),
+    path('cargarparada/', views.newParada, name='nuevaParada'),
+    path('cargarparadaxrecorrido/', views.newParadaXRecorrido, name='nuevaParadaXRecorrido'),
     path('ActualizarInicio/', views.ActualizarInicio, name='actualizarinicio'),
     path('ActualizarFinal/', views.ActualizarFinal, name='actualizarfinal'),
     path('emitirTicket/', views.EmitirTicket, name='EmitirTicket'),
     path('generarReportes/', views.GenerarReportes, name='generarReporte'),
+    path('cambiarEstado/<int:bus_id>/', views.cambiar_estado_bus, name='cambiar_estado_bus'),
+    path('cambiar_contrasenia/', views.cambiar_contrasenia, name='cambiar_contrasenia'),
 ]
 

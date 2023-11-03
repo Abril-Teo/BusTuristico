@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from django import forms
-from .models import CambioEstado, Estado, Recorrido, Bus, Chofer
+from .models import CambioEstado, Estado, Recorrido, Bus, Chofer, Parada, Atractivo
 from django.contrib.auth.models import User
 
 def validate_numeric(value):
@@ -44,7 +44,43 @@ class NuevoBus(forms.Form):
     numUnidad = forms.IntegerField()
     fechaCompra = forms.DateField()
     estado = forms.ModelChoiceField(queryset=CambioEstado.objects.all())
-    
+
+class NuevoRecorrido(forms.Form):
+    nombre = forms.CharField(max_length=100)
+    color = forms.CharField(widget=forms.TextInput(attrs={'type': 'color'}), initial='#FF0000')
+    duracionAprox = forms.IntegerField()
+    horaInicioAprox = forms.TimeField(help_text="Ingresar el horario de inicio estimado",
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    horaFinalizacionAprox = forms.TimeField(help_text="Ingresar el horario de Finalizacion estimado",
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    frecuencia = forms.IntegerField()
+
+class AgregarParada(forms.Form):
+    nroParada = forms.IntegerField()
+    llegadaEstimada = forms.TimeField(help_text="Ingresar el horario de llegada estimado",
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    recorrido = forms.ModelChoiceField(queryset=Recorrido.objects.all(),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+    parada = forms.ModelChoiceField(queryset=Parada.objects.all(),
+        error_messages={'required': 'Este campo es obligatorio.'}
+    )
+
+class NuevaParada(forms.Form):
+    nombre = forms.CharField(max_length=100)
+    calle = forms.CharField(max_length=100)
+    numero = forms.IntegerField()
+    decripcion = forms.CharField(max_length=200)
+    foto = forms.CharField(max_length=200)
+    atractivos = forms.ModelMultipleChoiceField(
+        queryset=Atractivo.objects.all(),  # Debes definir la queryset para los objetos Atractivo disponibles
+        widget=forms.CheckboxSelectMultiple,  # Puedes usar CheckboxSelectMultiple u otro widget adecuado
+        required=False,  # Si no es requerido, establece esto en False
+    )
+
 class NuevoCambioEstado(forms.Form):
     fechaCambio = forms.DateField(initial=datetime.today(), widget=forms.DateInput(attrs={'disabled': 'disabled'}))#si no anda cambiar a date el datetime
     estadoAnterior = forms.ModelChoiceField(queryset=Estado.objects.all())

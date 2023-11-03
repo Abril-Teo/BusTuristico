@@ -36,7 +36,7 @@
             <form method="post" action="{% url 'EmitirTicket'%}">
                 {% csrf_token %}
                 <input type="hidden" name="id" value="{{ viaje.id }}">
-                <button type="submit"  target="_blank">Generar PDF</button>
+                <button type="submit"  target="_blank">Generar Ticket</button>
             </form>
         {% endif %}
         

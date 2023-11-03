@@ -23,13 +23,17 @@
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo chofer</button>
 </form>
-<form method="post" action="">
+<form method="post" action="{% url 'nuevoBus' %}">
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo colectivo</button>
 </form>
-<form method="post" action="">
+<form method="post" action="{% url 'nuevoRecorrido' %}">
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo Recorrido</button>
+</form>
+<form method="post" action="{% url 'nuevaParadaXRecorrido' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Vincular Parada Con Recorrido</button>
 </form>
 {% endblock %}
 

@@ -23,9 +23,30 @@
   <link rel="icon" href="../static/images/busturistico-logo.ico">
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href='/bus'>
+      <a class="navbar-brand" href='/'>
         <img src= "{% static '../static/images/logo.png'%}" alt="Logo" width="250" height="55">
       </a>
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'cambiar_contrasenia'%}">
+          {% csrf_token %}
+          <li class="nav-item">
+              <button type="submit" class="nav-link active" aria-current="page">Cambiar contraseña</button>
+          </li>
+        </form>
+              <a class="btn btn-primary" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
+              <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
+                  {% csrf_token %}
+              </form>
+          <script>
+            document.getElementById('cerrar-sesion-link').addEventListener('click', function(e) {
+                e.preventDefault();  
+                document.getElementById('cerrar-sesion-form').submit();  
+            });
+          </script>
+            {% else %}
+              <a class="btn btn-primary" href="/bus/accounts/vista_login/">Iniciar sesion</a>
+              
+            {% endif %}
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -37,7 +58,7 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/bus">Inicio</a>
+              <a class="nav-link active" aria-current="page" href="/">Inicio</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/bus/Recorridos">Recorridos</a>
@@ -45,7 +66,7 @@
             {% if user.is_superuser %}
             <li class="nav-item">
               <a class="nav-link" href="/admin/">Admin site</a>
-            </li>
+          </li>          
           <form method="post" action="{% url 'solosuper' %}">
             {% csrf_token %}
             <li class="nav-item">
@@ -58,25 +79,13 @@
                 <button type="submit" class="nav-link active" aria-current="page">Generar Reporte diario</button>
             </li>
           </form>
-            {% endif %}
-            {% if user.is_authenticated %}
+          <form method="post" action="{% url 'cambiar_estado_bus'%}">
+            {% csrf_token %}
             <li class="nav-item">
-              <a class="nav-link" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
-              <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
-                  {% csrf_token %}
-              </form>
-          </li>
-          <script>
-            document.getElementById('cerrar-sesion-link').addEventListener('click', function(e) {
-                e.preventDefault();  
-                document.getElementById('cerrar-sesion-form').submit();  
-            });
-          </script>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="/bus/accounts/vista_login/">Iniciar sesion</a>
+                <button type="submit" class="nav-link active" aria-current="page">Cambiar estado bus</button>
             </li>
-              
+          </form>
+
             {% endif %}
             {% if user.is_staff %}
               <form method="post" action="{% url 'staffonly' %}">
@@ -86,16 +95,6 @@
                 </li>
             </form>
           {% endif %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Info
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/bus/hoponhopoff">Hoop On y Hoop Of</a></li>
-                <li><a class="dropdown-item" href="#">Comodidades</a></li>
-                <li><a class="dropdown-item" href="#">Preguntas Frecuentes</a></li>
-              </ul>
-            </li>
           </ul>
         </div>
       </div>

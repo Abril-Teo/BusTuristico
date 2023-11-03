@@ -8,10 +8,10 @@ django = "*"
 django-colorfield = "*"
 django-star-ratings = "*"
 reportlab = "*"
-tk = "*"
 weasyprint = "*"
 jinja2 = "*"
 pdfkit = "*"
+wkhtmltopdf = "*"
 
 [dev-packages]
 
