@@ -7,40 +7,53 @@
     <li><strong>Inicio estimado:</strong> {{ viaje.inicio_estimado }}</li>
     <li><strong>Final estimado:</strong> {{ viaje.final_estimado }}</li>
     
-    <body>
-        <h1>Editar Viaje</h1>
-        
-        
-        <div>
-        {% if viaje.inicio_real == null %}
-            <form method="post" action="{% url 'actualizarinicio'%}">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ viaje.id }}">
-                <button type="submit">EMPEZAR VIAJE</button>
-            </form>
+    <h1>Editar Viaje</h1>
+    
+    <div>
+        {% if viaje.inicio_real is None %}
+            <button id="administrar-viaje-btn">Comenzar a administrar viaje</button>
         {% else %}
-        <li><strong>El viaje empezo a las:</strong> {{ viaje.inicio_real }}</li>
+            <li><strong>El viaje empezó a las:</strong> {{ viaje.inicio_real }}</li>
         {% endif %}
-        {% if viaje.final_real == null %}
-        {% if viaje.inicio_real != null %}
-            <form method="post" action="{% url 'actualizarfinal'%}">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ viaje.id }}">
-                <button type="submit">FINALIZAR VIAJE</button>
-            </form>
+        {% if viaje.final_real is None %}
+            <div id="botones-viaje" style="display: none;">
+                <button id="iniciar-viaje-btn" disabled>Iniciar Viaje</button>
+                <button id="finalizar-viaje-btn" disabled>Finalizar Viaje</button>
+            </div>
         {% endif %}
-        {% else %}
-            <li><strong>El viaje finalizo a las:</strong> {{ viaje.final_real }}</li>
-        {% endif %}
-        {% if viaje.final_real != null and viaje.inicio_real != null %}
-            <form method="post" action="{% url 'EmitirTicket'%}">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ viaje.id }}">
-                <button type="submit"  target="_blank">Generar Ticket</button>
-            </form>
-        {% endif %}
-        
     </div>
-    </body>
 </ul>
+
+<script>
+    var inicioReal = "null";  // Valor inicial para indicar que no está definido
+    var finalReal = "null";   // Valor inicial para indicar que no está definido
+    var botonesViaje = document.getElementById("botones-viaje");
+    var iniciarViajeBtn = document.getElementById("iniciar-viaje-btn");
+    var finalizarViajeBtn = document.getElementById("finalizar-viaje-btn");
+
+    document.getElementById("administrar-viaje-btn").addEventListener("click", function() {
+        if (botonesViaje.style.display === "none") {
+            botonesViaje.style.display = "flex"; // Mostrar los botones
+            if (inicioReal === "null") {
+                iniciarViajeBtn.disabled = false; // Habilitar el botón de iniciar viaje
+                finalizarViajeBtn.disabled = true; // Deshabilitar el botón de finalizar viaje
+            }
+        } else {
+            botonesViaje.style.display = "none"; // Ocultar los botones
+        }
+    });
+
+    iniciarViajeBtn.addEventListener("click", function() {
+        // Aquí puedes realizar la lógica para iniciar el viaje y actualizar inicioReal
+        inicioReal = new Date(); // Por ejemplo, asignar la hora actual
+        iniciarViajeBtn.disabled = true;
+        finalizarViajeBtn.disabled = false;
+    });
+
+    finalizarViajeBtn.addEventListener("click", function() {
+        // Aquí puedes realizar la lógica para finalizar el viaje y actualizar finalReal
+        finalReal = new Date(); // Por ejemplo, asignar la hora actual
+        finalizarViajeBtn.disabled = true;
+    });
+</script>
 {% endblock %}

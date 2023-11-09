@@ -376,7 +376,7 @@ def cambiar_estado_bus(request, bus_id):
         bus.estado = cambio_estado
         bus.save()
         
-        return redirect('cambiar_estado_bus')  # Reemplaza 'pagina_deseada' con el nombre de tu vista
+        return redirect('cambiar_estado_bus.html')
 
     bus = Bus.objects.get(pk=bus_id)
     return render(request, 'cambiar_estado_bus.html', {'bus': bus})
@@ -391,7 +391,3 @@ def cambiar_contrasenia(request):
             user = request.user
             user.set_password(password)
             user.save()
-
-
-
-

@@ -29,11 +29,9 @@
       {% if user.is_authenticated %}
         <form method="post" action="{% url 'cambiar_contrasenia'%}">
           {% csrf_token %}
-          <li class="nav-item">
-              <button type="submit" class="nav-link active" aria-current="page">Cambiar contraseña</button>
-          </li>
+              <button type="submit" class="btn btn-outline-secondary btn_contra" aria-current="page">Cambiar contraseña</button>
         </form>
-              <a class="btn btn-primary" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
+              <a class="btn btn-primary btn_sesion" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
               <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
                   {% csrf_token %}
               </form>
@@ -44,7 +42,7 @@
             });
           </script>
             {% else %}
-              <a class="btn btn-primary" href="/bus/accounts/vista_login/">Iniciar sesion</a>
+              <a class="btn btn-primary btn_iniciar" href="/bus/accounts/vista_login/">Iniciar sesion</a>
               
             {% endif %}
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
@@ -79,12 +77,19 @@
                 <button type="submit" class="nav-link active" aria-current="page">Generar Reporte diario</button>
             </li>
           </form>
-          <form method="post" action="{% url 'cambiar_estado_bus'%}">
+          <!--
+          <form method="post" action="{% url 'cambiar_estado_bus' bus_id=123 %}"> 
+            
+            
+            DE DONDE GARCHA SACAN EL ID DEL BUS
+            
+            
             {% csrf_token %}
             <li class="nav-item">
                 <button type="submit" class="nav-link active" aria-current="page">Cambiar estado bus</button>
             </li>
           </form>
+          -->
 
             {% endif %}
             {% if user.is_staff %}
@@ -137,6 +142,15 @@
     }
     ::-webkit-scrollbar {
       display: none;
+    }
+    .btn_iniciar{
+      margin-right: -60%;
+    }
+    .btn_sesion{
+      margin-right: -40%;
+    }
+    .btn_contra{
+      margin-right: -60%;
     }
 </style>
 </head>
