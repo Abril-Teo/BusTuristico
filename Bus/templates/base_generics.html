@@ -42,7 +42,7 @@
             });
           </script>
             {% else %}
-              <a class="btn btn-primary btn_iniciar" href="/bus/accounts/vista_login/">Iniciar sesion</a>
+              <a class="btn btn_iniciar btn-primary" href="/bus/accounts/vista_login/">Iniciar sesion</a>
               
             {% endif %}
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
@@ -143,15 +143,30 @@
     ::-webkit-scrollbar {
       display: none;
     }
-    .btn_iniciar{
-      margin-right: -60%;
+    @media (max-width: 7000px){
+      .btn_iniciar{
+        margin-right: -60%;
+      }
+      .btn_sesion{
+        margin-right: -45%;
+      }
+      .btn_contra{
+        margin-right: -60%;
+      }
     }
-    .btn_sesion{
-      margin-right: -40%;
+
+    @media (max-width: 1279px){
+      .btn_iniciar{
+        margin-right: -50%;
+      }
+      .btn_sesion{
+        margin-right: -30%;
+      }
+      .btn_contra{
+        margin-right: -50%;
+      }
     }
-    .btn_contra{
-      margin-right: -60%;
-    }
+
 </style>
 </head>
 
