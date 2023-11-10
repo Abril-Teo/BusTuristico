@@ -27,10 +27,7 @@
         <img src= "{% static '../static/images/logo.png'%}" alt="Logo" width="250" height="55">
       </a>
       {% if user.is_authenticated %}
-        <form method="post" action="{% url 'cambiar_contrasenia'%}">
-          {% csrf_token %}
-              <button type="submit" class="btn btn-outline-secondary btn_contra" aria-current="page">Cambiar contraseña</button>
-        </form>
+        <a href="{% url 'cambiar_contraseña' %}">Cambiar Contraseña</a>
               <a class="btn btn-primary btn_sesion" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
               <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
                   {% csrf_token %}
@@ -65,12 +62,9 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin/">Admin site</a>
           </li>          
-          <form method="" action="{% url 'solosuper' %}">
-            {% csrf_token %}
-            <li class="nav-item">
-                <button type="submit" class="nav-link active" aria-current="page">Cargar nuevos viajes</button>
-            </li>
-          </form>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'listar_viajes' %}">Ver los viajes</a>
+        </li>
           <form method="post" action="{% url 'generarReporte' %}">
             {% csrf_token %}
             <li class="nav-item">

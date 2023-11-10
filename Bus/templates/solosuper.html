@@ -86,7 +86,9 @@
                     'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()  // Agrega el token CSRF
                 },
                 success: function(response) {
-                    location.reload();
+                    var nuevaURL = "{% url 'listar_viajes' %}";
+                    window.location.href = nuevaURL;
+                    
                 },
                 error: function(error) {
                     console.error('Error en la solicitud', error);

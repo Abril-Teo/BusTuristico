@@ -100,6 +100,10 @@ class NuevoViaje(forms.Form):
             self.fields['recorrido'].queryset = Recorrido.objects.filter(duracionAprox=duracion)
 
 """
+class ViajeForm(forms.ModelForm):
+    class Meta:
+        model = Viaje
+        fields = ['nro_viaje', 'fecha', 'inicio_real', 'final_real', 'inicio_estimado', 'final_estimado', 'chofer', 'bus', 'recorrido']
     
 class NuevoChofer(forms.Form):
     nombre = forms.CharField(max_length=100)

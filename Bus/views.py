@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Bus, CambioEstado, Estado 
 
 #from io import BytesIO
@@ -164,7 +164,29 @@ def MostrarRecorridos(request):
     else:
         return JsonResponse({'error': 'Algo salió mal'})
     
-class CrearViajeView(CreateView):
+    
+    
+def listar_viajes(request):
+    viajes = Viaje.objects.all()
+    return render(request, 'listar_viajes.html', {'viajes': viajes})
+
+def editar_viaje(request, pk):
+    viaje = get_object_or_404(Viaje, pk=pk)
+
+    if request.method == 'POST':
+        form = ViajeForm(request.POST, instance=viaje)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_viajes')
+    else:
+        form = ViajeForm(instance=viaje)
+
+    return render(request, 'editar_viaje.html', {'form': form, 'viaje': viaje})
+def eliminar_viaje(request, pk):
+    viaje = get_object_or_404(Viaje, pk=pk)
+    viaje.delete()
+    return redirect('listar_viajes')
+"""class CrearViajeView(CreateView):
     model = Viaje
     template_name = 'crud.html'
     form_class = NuevoViaje
@@ -183,7 +205,7 @@ class EditarViajeView(UpdateView):
 class ElimnarViajeView(DeleteView):
     model = Viaje
     success_url = reverse_lazy('lista_viajes')
-
+"""
 def newChofer(request):
     if request.method == 'POST':
         formulario = NuevoChofer(request.POST)
@@ -280,7 +302,7 @@ def ActualizarInicio(request):
     if request.method == 'POST':
         viaje_id = request.POST.get('id')
         viaje = Viaje.objects.get(id=viaje_id)
-        viaje.inicio_real = datetime.now()
+        viaje.inicio_real = datetime.datetime.now()
         viaje.save()
         return redirect(f'/bus/staff/{viaje_id}')
 
@@ -289,7 +311,7 @@ def ActualizarFinal(request):
     if request.method == 'POST':
         viaje_id = request.POST.get('id')
         viaje = Viaje.objects.get(id=viaje_id)
-        viaje.final_real = datetime.now()
+        viaje.final_real = datetime.datetime.now()
         viaje.save()
         return redirect(f'/bus/staff/{viaje_id}')
 
@@ -300,35 +322,38 @@ def EmitirTicket(request):
     if request.method == 'POST':
         id_viaje = request.POST.get('id')
         viaje = Viaje.objects.get(id=id_viaje)
-        
-        env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
-        template = env.get_template('ticketTemplate.html')
-        fecha = viaje.fecha
-        dia = fecha.strftime("%d-%m-%Y")
-        nombrecompleto = f'{viaje.chofer.nombre} {viaje.chofer.apellido}' 
-        fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
-        fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
-        duracion = fecha_final_real - fecha_inicial_real
-        duracion_en_minutos = round(duracion.total_seconds() / 60)
-        hoy = datetime.now()
-        
-        html = template.render({"nroViaje": viaje.nro_viaje, "fecha": dia, "inicio": viaje.inicio_real, "final": viaje.final_real, "nro_unidad": viaje.bus.numUnidad, "legajo": viaje.chofer.legajo, "nombre": nombrecompleto, "recorrido": viaje.recorrido.nombre, "duracion": duracion_en_minutos, "fechaHoy": hoy})
-        
-        options = {
-            'page-size': 'Letter',
-            'encoding': "UTF-8",
-            'margin-top': '0.75in',
-            'margin-right': '0.75in',
-            'margin-bottom': '0.75in',
-            'margin-left': '0.75in'
-        }
-        
-        config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
-        pdf = pdfkit.from_string(html, False, configuration=config, options=options)
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="Ticket.pdf"'
+        try:
+            env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
+            template = env.get_template('ticketTemplate.html')
+            fecha = viaje.fecha
+            dia = fecha.strftime("%d-%m-%Y")
+            nombrecompleto = f'{viaje.chofer.nombre} {viaje.chofer.apellido}' 
+            fecha_inicial_real = datetime.datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
+            fecha_final_real = datetime.datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
+            duracion = fecha_final_real - fecha_inicial_real
+            duracion_en_minutos = round(duracion.total_seconds() / 60)
+            hoy = datetime.datetime.now()
+            
+            html = template.render({"nroViaje": viaje.nro_viaje, "fecha": dia, "inicio": viaje.inicio_real, "final": viaje.final_real, "nro_unidad": viaje.bus.numUnidad, "legajo": viaje.chofer.legajo, "nombre": nombrecompleto, "recorrido": viaje.recorrido.nombre, "duracion": duracion_en_minutos, "fechaHoy": hoy})
+            
+            options = {
+                'page-size': 'Letter',
+                'encoding': "UTF-8",
+                'margin-top': '0.75in',
+                'margin-right': '0.75in',
+                'margin-bottom': '0.75in',
+                'margin-left': '0.75in'
+            }
+            
+            config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+            pdf = pdfkit.from_string(html, False, configuration=config, options=options)
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Ticket.pdf"'
 
-        return response
+            return response
+        except Exception as e:
+            print(e)
+            return HttpResponse("le faltan datos al viaje ejemplo")
         
 
 def GenerarReportes(request):
@@ -422,14 +447,4 @@ def cambiar_estado_bus(request, bus_id):
     bus = Bus.objects.get(pk=bus_id)
     return render(request, 'cambiar_estado_bus.html')
 
-def cambiar_contrasenia(request):
-    if request.method == 'POST':
-        username = request.get('username')
-        password = request.get('password')
-        userauth = authenticate(request, username=username, password=password)
-        if userauth is not None:
-            newpassword = request.get('newPass')
-            user = request.user
-            user.set_password(password)
-            user.save()
 

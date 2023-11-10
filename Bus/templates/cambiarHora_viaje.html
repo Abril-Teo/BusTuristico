@@ -19,6 +19,7 @@
                             <button type="submit" class="btn btn-primary btn_viaje">EMPEZAR VIAJE</button>
                         </form>
                     {% else %}
+                    <li><strong>El viaje Inicio a las:</strong> {{ viaje.inicio_real }}</li>
                     {% endif %}
                 </div>
                 <div class="col-md-6">
@@ -37,7 +38,11 @@
         <br>
         <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
         {% if viaje.final_real != null and viaje.inicio_real != null %}
-            <a href="{% url 'EmitirTicket' %}" class="btn" target="_blank">Generar PDF</a>
+        <form method="post" action="{% url 'EmitirTicket'%}">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ viaje.id }}">
+            <button type="submit" class="button">Generar PDF</button>
+        </form>
         {% endif %}
     </body>
 </ul>

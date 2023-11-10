@@ -1,0 +1,33 @@
+{% extends 'base_generics.html' %}
+
+{% block content %}
+<h1>Listado de Viajes</h1>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Número de Viaje</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Inicio Real</th>
+                <th scope="col">Final Real</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Borrar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for viaje in viajes %}
+                <tr>
+                    <td>{{ viaje.nro_viaje }}</td>
+                    <td>{{ viaje.fecha }}</td>
+                    <td>{{ viaje.inicio_real }}</td>
+                    <td>{{ viaje.final_real }}</td>
+                    <td><a  class="btn btn-primary" href="{% url 'editar_viaje' pk=viaje.pk %}">Editar</a></td>
+                    <td><a class="btn btn-danger" href="{% url 'eliminar_viaje' pk=viaje.pk %}">Borrar</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form method="" action="{% url 'solosuper' %}">
+        {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Cargar nuevos viajes</button>
+    </form>
+{% endblock %}

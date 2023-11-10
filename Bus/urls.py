@@ -1,5 +1,7 @@
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import views as auth_views
+
 
 from . import views
 
@@ -14,7 +16,7 @@ urlpatterns = [
     path('accounts/vista_login/', views.vista_login, name='vista_login'),
     path('accounts/vista_login/comprobacion', views.logincomprobacion, name='login_comprobacion'),
     path('super/', user_passes_test(lambda u: u.is_superuser)(views.mostrarFormViaje), name='solosuper'),
-    path('crud/', user_passes_test(lambda u: u.is_superuser)(views.CrearViajeView.as_view()), name='lista_viajes'),
+    #path('crud/', user_passes_test(lambda u: u.is_superuser)(views.CrearViajeView.as_view()), name='lista_viajes'),
     path('super-recorrido-viaje/', user_passes_test(lambda u: u.is_superuser)(views.MostrarRecorridos), name='elegirRecorrido'),
     path('staff/', user_passes_test(lambda u: u.is_staff)(views.staffonly), name='staffonly'),
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
@@ -28,9 +30,12 @@ urlpatterns = [
     path('ActualizarFinal/', views.ActualizarFinal, name='actualizarfinal'),
     path('emitirTicket/', views.EmitirTicket, name='EmitirTicket'),
     path('generarReportes/', views.GenerarReportes, name='generarReporte'),
-    path('cambiar_contrasenia/', views.cambiar_contrasenia, name='cambiar_contrasenia'),
+    path('cambiar-contrasena/', auth_views.PasswordChangeView.as_view(), name='cambiar_contraseña'),
     path('cambiar_estado_bus/', views.cambiar_estado_bus, name = 'cambiar_estado_bus'),
     path('super/crearViaje/', views.newViaje, name = 'crear_viaje'),
+    path('crud/listar', views.listar_viajes, name='listar_viajes'),
+    path('crud/editar/<int:pk>/', views.editar_viaje, name='editar_viaje'),
+    path('crud/eliminar/<int:pk>/', views.eliminar_viaje, name='eliminar_viaje'),
     
 ]
 

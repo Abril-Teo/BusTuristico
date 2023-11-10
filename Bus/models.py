@@ -70,8 +70,7 @@ class Recorrido(models.Model):
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:
-        espacios_en_blanco = ' - ' * 3
-        return f'{self.nombre}{espacios_en_blanco}{self.duracionAprox}'
+        return f'{self.nombre}'
     
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
