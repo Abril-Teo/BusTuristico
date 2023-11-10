@@ -31,9 +31,9 @@ class Viaje(models.Model):
     final_real = models.TimeField(null=True, blank=True)
     inicio_estimado = models.TimeField()
     final_estimado = models.TimeField()
-    chofer = models.ForeignKey('Chofer', on_delete=models.CASCADE)
-    bus = models.ForeignKey('Bus', on_delete=models.CASCADE)
-    recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE)
+    chofer = models.ForeignKey('Chofer', on_delete=models.CASCADE, null=True, blank=True)
+    bus = models.ForeignKey('Bus', on_delete=models.CASCADE, null=True, blank=True)
+    recorrido = models.ForeignKey('Recorrido', on_delete=models.CASCADE, null=True, blank=True)
 
     
     
@@ -57,6 +57,9 @@ class Viaje(models.Model):
     
     def generarInforme(self):
         pass
+
+    def __str__(self) -> str:
+        return str(self.nro_viaje)
     
 class Recorrido(models.Model):
     nombre = models.CharField(max_length=50)
@@ -67,7 +70,8 @@ class Recorrido(models.Model):
     frecuencia = models.IntegerField()
     
     def __str__(self) -> str:
-        return self.nombre
+        espacios_en_blanco = ' - ' * 3
+        return f'{self.nombre}{espacios_en_blanco}{self.duracionAprox}'
     
     def obtenerParadas(self):
         return "metodo Obtener Paradas"
