@@ -120,9 +120,9 @@ def viewViaje(request):
             fecha_inicial = datos_formulario['fecha']
             nro_viaje = datos_formulario['nroViaje']
 
-            nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
+            nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer="", bus="", recorrido=datos_formulario['recorrido'])
             nuevo_objeto.save()
-
+            """
             if 'semanal' in request.POST and request.POST['semanal'] == 'True':
                 print('es semanaaaaaaaal')
                 for i in range(6):
@@ -131,14 +131,67 @@ def viewViaje(request):
                     nuevo_objeto = Viaje(nro_viaje=nro_viaje, fecha=fecha_inicial, inicio_estimado=datos_formulario['inicioEstimado'], final_estimado=datos_formulario['finalEstimado'], chofer=datos_formulario['chofer'], bus=datos_formulario['bus'], recorrido=datos_formulario['recorrido'])
                     nuevo_objeto.save()
                 formulario = NuevoViaje()
+            
             formulario = NuevoViaje()
+            """
             return render(request, 'solosuper.html', {"formulario": formulario})
+            
         else:
             print("Formulario no válido")
     else:
         formulario = NuevoViaje()
     
     return render(request, 'solosuper.html', {'formulario': formulario})
+
+
+
+def newViaje(request):
+    if request.method == 'POST':
+        formulario = NuevoViaje(request.POST)
+        if formulario.is_valid():
+            print("pasa formulario antes")
+            nuevo_objeto = Viaje(
+                nro_viaje=formulario.cleaned_data['nroViaje'] ,
+                fecha=formulario.cleaned_data['fecha'], 
+                inicio_real= None,
+                final_real= None,
+                inicio_estimado=formulario.cleaned_data['inicioEstimado'], 
+                final_estimado=formulario.cleaned_data['finalEstimado'], 
+                chofer=None, 
+                bus=None, 
+                recorrido=None,
+            )
+            nuevo_objeto.save()
+            return redirect('elegirRecorrido')
+        else:    
+            print("not valid antes")
+    else:
+        formulario = NuevoViaje()
+    recorridos = Recorrido.objects.values('nombre', 'duracionAprox')
+    return render(request, 'solosuper.html', {'formulario': formulario, 'recorridos': recorridos})
+
+
+def newRecorridoForViaje(request):
+    print("llama a la vista newRecorridoForViaje")
+    if request.method == 'POST':
+        formulario = MostrarRecorridos(request.POST)
+        
+        if formulario.is_valid():
+            print("paseee")
+            nro_viaje = formulario.cleaned_data['nroViaje']
+            viaje = Viaje.objects.get(nro_viaje=nro_viaje)
+            viaje.recorrido = formulario.cleaned_data['recorrido']
+            viaje.save()
+            print("amazing")
+            return redirect('solosuper')
+            
+        else:    
+            print("not valid formulario ")
+    else:
+        print("no pasa post")
+        formulario = MostrarRecorridos()
+    recorridos = Recorrido.objects.values('nombre', 'duracionAprox')
+    return render(request, 'solosuper.html', {'formulario': formulario, 'recorridos': recorridos})
 
 def newChofer(request):
     if request.method == 'POST':
@@ -193,7 +246,7 @@ def newRecorrido(request):
             nuevo_objeto.save()
             return redirect('solosuper')
         else:    
-            print("not valid")
+            print("not valid WTF")
     else:
         formulario = NuevoViaje()
     
@@ -371,12 +424,9 @@ def cambiar_estado_bus(request, bus_id):
         # Crear un nuevo registro de cambio de estado
         cambio_estado = CambioEstado(estadoAnterior=bus.estado, estadoNuevo=nuevo_estado_habilitado, motivo="Cambio de estado por administrador")
         cambio_estado.save()
-        
         # Actualizar el estado del autobús
         bus.estado = cambio_estado
-        bus.save()
-        
-        return redirect('cambiar_estado_bus.html')
+        return redirect('cambiar_estado_bus')  # Reemplaza 'pagina_deseada' con el nombre de tu vista
 
     bus = Bus.objects.get(pk=bus_id)
     return render(request, 'cambiar_estado_bus.html', {'bus': bus})
@@ -391,3 +441,7 @@ def cambiar_contrasenia(request):
             user = request.user
             user.set_password(password)
             user.save()
+
+
+
+
