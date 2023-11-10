@@ -45,6 +45,9 @@
             $('#calcular-duraciones-form').append('<input type="hidden" name="inicioEstimado" value="' + inicioEstimadoValue + '">');
             var finalEstimadoValue = obtenerFinal();  
             $('#calcular-duraciones-form').append('<input type="hidden" name="finalEstimado" value="' + finalEstimadoValue + '">');
+            
+            var boton = document.getElementById("btn-validar");
+            boton.style.display = "none";
   
             // Envía el formulario usando AJAX
             $.ajax({
@@ -55,6 +58,8 @@
                 success: function (data) {
                     var recorridosArray = JSON.parse(data.recorridos);
                     $('#recorridos-container').empty();
+                    $('#recorridos-container').append(
+                        `<label for="recorrido">Seleccione un recorrido:</label><br>`);
                     recorridosArray.forEach(function (recorrido) {
                         $('#recorridos-container').append(
                             `<input type="radio" name="recorrido" value="${recorrido.pk}">
