@@ -12,6 +12,7 @@ weasyprint = "*"
 jinja2 = "*"
 pdfkit = "*"
 wkhtmltopdf = "*"
+django-wkhtmltopdf = "*"
 
 [dev-packages]
 

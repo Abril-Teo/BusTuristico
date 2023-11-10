@@ -13,8 +13,9 @@ urlpatterns = [
     path('chofferes/', views.cargaRecorridos, name='cargaRecorridos'),
     path('accounts/vista_login/', views.vista_login, name='vista_login'),
     path('accounts/vista_login/comprobacion', views.logincomprobacion, name='login_comprobacion'),
-    path('super/', user_passes_test(lambda u: u.is_superuser)(views.newViaje), name='solosuper'),
-    path('super-recorrido-viaje/', user_passes_test(lambda u: u.is_superuser)(views.newRecorridoForViaje), name='elegirRecorrido'),#viewViaje si no anda
+    path('super/', user_passes_test(lambda u: u.is_superuser)(views.mostrarFormViaje), name='solosuper'),
+    path('crud/', user_passes_test(lambda u: u.is_superuser)(views.CrearViajeView.as_view()), name='lista_viajes'),
+    path('super-recorrido-viaje/', user_passes_test(lambda u: u.is_superuser)(views.MostrarRecorridos), name='elegirRecorrido'),#viewViaje si no anda
     path('staff/', user_passes_test(lambda u: u.is_staff)(views.staffonly), name='staffonly'),
     path('cerrar-sesion/', views.cerrar_sesion, name='cerrar_sesion'),
     path('staff/<int:pk>', views.CargarViajeDetailViews.as_view(), name='cargar_viaje'),
@@ -27,7 +28,8 @@ urlpatterns = [
     path('ActualizarFinal/', views.ActualizarFinal, name='actualizarfinal'),
     path('emitirTicket/', views.EmitirTicket, name='EmitirTicket'),
     path('generarReportes/', views.GenerarReportes, name='generarReporte'),
-    path('cambiarEstado/<int:bus_id>/', views.cambiar_estado_bus, name='cambiar_estado_bus'),
     path('cambiar_contrasenia/', views.cambiar_contrasenia, name='cambiar_contrasenia'),
+    path('cambiar_estado_bus/', views.cambiar_estado_bus, name = 'cambiar_estado_bus'),
+    
 ]
 

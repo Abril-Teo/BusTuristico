@@ -1,17 +1,22 @@
 from datetime import date, timedelta
 from datetime import datetime
 
+
 from django.shortcuts import render, redirect
 from .models import Bus, CambioEstado, Estado 
 
 #from io import BytesIO
 #from tkinter import Canvas
 from django.views import View, generic
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView, CreateView, DeleteView
+from django.urls import reverse_lazy
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.core.serializers import serialize
 
 from Bus.templatetags import jinja2_custom_filters
 from .forms import *
@@ -27,6 +32,7 @@ import pdfkit
 
 
 from .models import Atractivo, Parada, Recorrido, ParadaxRecorrido
+from django.shortcuts import render
 
 def vista_login(request):
     return render(request, 'login.html')
@@ -143,13 +149,13 @@ def viewViaje(request):
     
     return render(request, 'solosuper.html', {'formulario': formulario})
 
-
-
+def mostrarFormViaje(request):
+    formulario = NuevoViaje()
+    return render(request, 'solosuper.html', {'formulario': formulario})
 def newViaje(request):
     if request.method == 'POST':
         formulario = NuevoViaje(request.POST)
         if formulario.is_valid():
-            print("pasa formulario antes")
             nuevo_objeto = Viaje(
                 nro_viaje=formulario.cleaned_data['nroViaje'] ,
                 fecha=formulario.cleaned_data['fecha'], 
@@ -167,14 +173,30 @@ def newViaje(request):
             print("not valid antes")
     else:
         formulario = NuevoViaje()
-    recorridos = Recorrido.objects.values('nombre', 'duracionAprox')
-    return render(request, 'solosuper.html', {'formulario': formulario, 'recorridos': recorridos})
+    return render(request, 'solosuper.html', {'formulario': formulario})
 
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+def MostrarRecorridos(request):
+    inicio = request.POST.get('inicioEstimado')
+    final = request.POST.get('finalEstimado')
+    print(inicio,final)
+    final = datetime.datetime.strptime(final, "%H:%M").time()
+    inicio = datetime.datetime.strptime(inicio, "%H:%M").time()
 
-def newRecorridoForViaje(request):
-    print("llama a la vista newRecorridoForViaje")
+# Realiza la resta
+    duracion_seleccionada = timedelta(hours=final.hour, minutes=final.minute) - timedelta(hours=inicio.hour, minutes=inicio.minute)
+    duracion_en_minutos = duracion_seleccionada.total_seconds() / 60
+    print(duracion_en_minutos)
+    if duracion_seleccionada:
+        recorridos_filtrados = Recorrido.objects.filter(duracionAprox=duracion_en_minutos)
+        serialized_recorridos = serialize('json', recorridos_filtrados)
+        return JsonResponse({'recorridos': serialized_recorridos})
+    else:
+        return JsonResponse({'error': 'Algo salió mal'})
+    """print("llama a la vista newRecorridoForViaje")
+    
     if request.method == 'POST':
-        formulario = MostrarRecorridos(request.POST)
+        formulario = MostrarRecorridos(request.POST, viaje_id=viaje_id)
         
         if formulario.is_valid():
             print("paseee")
@@ -189,9 +211,32 @@ def newRecorridoForViaje(request):
             print("not valid formulario ")
     else:
         print("no pasa post")
-        formulario = MostrarRecorridos()
+        formulario = MostrarRecorridos(viaje_id=viaje_id)
     recorridos = Recorrido.objects.values('nombre', 'duracionAprox')
-    return render(request, 'solosuper.html', {'formulario': formulario, 'recorridos': recorridos})
+    return render(request, 'solosuper.html', {'formulario': formulario, 'recorridos': recorridos})"""
+
+
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+class CrearViajeView(CreateView):
+    model = Viaje
+    template_name = 'crud.html'
+    form_class = NuevoViaje
+    success_url = reverse_lazy('lista_viajes')
+
+
+
+class EditarViajeView(UpdateView):
+    model = Viaje
+    template_name = 'crud_update.html'
+    form_class = NuevoViaje
+    success_url = reverse_lazy('lista_viajes')
+
+
+
+class ElimnarViajeView(DeleteView):
+    model = Viaje
+    success_url = reverse_lazy('lista_viajes')
 
 def newChofer(request):
     if request.method == 'POST':
@@ -352,9 +397,9 @@ def GenerarReportes(request):
         for viaje in viajes:
             if viaje.inicio_real is not None and viaje.final_real is not None:
                 viajesValidos.append(viaje)
-                fecha_inicial_real = datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
-                fecha_final_real = datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
-                fecha_inicial_estimado = datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
+                fecha_inicial_real = datetime.datetime(2023, 10, 17, viaje.inicio_real.hour, viaje.inicio_real.minute, viaje.inicio_real.second)
+                fecha_final_real = datetime.datetime(2023, 10, 17, viaje.final_real.hour, viaje.final_real.minute, viaje.final_real.second)
+                fecha_inicial_estimado = datetime.datetime(2023, 10, 17, viaje.inicio_estimado.hour, viaje.inicio_estimado.minute, viaje.inicio_estimado.second)
                 duracion = fecha_final_real - fecha_inicial_real
                 duracion_en_minutos = round(duracion.total_seconds() / 60)
                 acumuladorduracion += duracion_en_minutos
@@ -392,7 +437,7 @@ def GenerarReportes(request):
             env = jinja2.Environment(loader = jinja2.FileSystemLoader('Bus/templates'))
             jinja2_custom_filters.register_custom_filters(env) 
             template = env.get_template('pdftemplate.html')
-            fecha = datetime.now()
+            fecha = datetime.datetime.now()
             dia = fecha.date().strftime("%d-%m-%Y")
             html = template.render({"dia":dia,"viajes":viajesValidos, "promedioinicio":promedioinicio, "promedioduracion": promedio_duracion})
             
@@ -429,7 +474,7 @@ def cambiar_estado_bus(request, bus_id):
         return redirect('cambiar_estado_bus')  # Reemplaza 'pagina_deseada' con el nombre de tu vista
 
     bus = Bus.objects.get(pk=bus_id)
-    return render(request, 'cambiar_estado_bus.html', {'bus': bus})
+    return render(request, 'cambiar_estado_bus.html')
 
 def cambiar_contrasenia(request):
     if request.method == 'POST':
@@ -441,7 +486,4 @@ def cambiar_contrasenia(request):
             user = request.user
             user.set_password(password)
             user.save()
-
-
-
 

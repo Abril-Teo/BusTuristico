@@ -1,0 +1,12 @@
+{% load static %}
+
+
+<form method="POST" action="{% url 'cambiar_estado_bus' bus.id %}">
+  {% csrf_token %}
+    <label for="estado">Estado:</label>
+        <select name="estado" id="estado">
+    <option value="activo">Activo</option>
+    <option value="inactivo">Inactivo</option>
+  </select>
+  <button type="submit">Cambiar estado</button>
+</form>

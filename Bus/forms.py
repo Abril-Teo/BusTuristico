@@ -4,7 +4,6 @@ from .models import *
 from django.contrib.auth.models import User
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-from webcolors import hex_to_name
 
 def validate_numeric(value):
     if not value.isdigit():
@@ -18,7 +17,7 @@ class NuevoViaje(forms.Form):
 
     nroViaje = forms.IntegerField(
         widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
-        initial=get_nro_viaje_initial,
+        initial=get_nro_viaje_initial(),
     )
     fecha = forms.DateField(
         initial=date.today().strftime('%Y-%m-%d'),
@@ -34,30 +33,46 @@ class NuevoViaje(forms.Form):
     )
 
 class MostrarRecorridos(forms.Form):
-    def get_nro_viaje_initial():
-        return Viaje.objects.count()
-    def get_lastest_fecha():
-        return Viaje.objects.last().fecha
-    def get_lastest_inicio_estimado():
-        return Viaje.objects.last().inicio_estimado
-    def get_lastest_final_estimado():
-        return Viaje.objects.last().final_estimado
+
+    def __init__(self, *args, **kwargs):
+        viaje_id = kwargs.pop('viaje_id', None)
+        super(MostrarRecorridos, self).__init__(*args, **kwargs)
         
+        if viaje_id is not None:
+            viaje = Viaje.objects.get(nro_viaje=viaje_id)
+            
+            self.fields['fecha'] = forms.DateField(
+                initial=viaje.fecha,
+                error_messages={'required': 'Este campo es obligatorio.'}
+            )
+            
+            self.fields['inicioEstimado'] = forms.TimeField(
+                initial=viaje.inicio_estimado,
+                help_text="Ingresar el horario de inicio estimado",
+                error_messages={'required': 'Este campo es obligatorio.'}
+            )
+            
+            self.fields['finalEstimado'] = forms.TimeField(
+                initial=viaje.final_estimado,
+                help_text="Ingresar el horario de final estimado",
+                error_messages={'required': 'Este campo es obligatorio.'}
+            )
+       
     nroViaje = forms.IntegerField(
         widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
-        initial=get_nro_viaje_initial(),
+        #initial=get_nro_viaje_initial(),
     )
     fecha = forms.DateField(
-        initial=get_lastest_fecha(),
+        #initial=Viaje.objects.get(nro_viaje = viaje_id).fecha,
         error_messages={'required': 'Este campo es obligatorio.'}
     )
     inicioEstimado = forms.TimeField(
-        initial=get_lastest_inicio_estimado(),
+        #initial=get_lastest_inicio_estimado(),
         help_text="Ingresar el horario de inicio estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
     finalEstimado = forms.TimeField(
-        initial=get_lastest_final_estimado(),
+      #  initial=get_lastest_final_estimado(),
         help_text="Ingresar el horario de final estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )

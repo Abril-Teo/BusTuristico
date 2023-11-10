@@ -2,12 +2,15 @@
 {% extends 'base_generics.html' %}
 
 {% block content %}
-<form method="post" >
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<form id="calcular-duraciones-form" method="post" action="{% url 'elegirRecorrido' %}"">
     {% csrf_token %}
     {{ formulario.as_p }}
-    <button type="submit">Enviar</button>
-    <input type="checkbox" name="semanal" id="semanal-checkbox" value="False"> Hacerlo semanal
+    <button id="btn-validar" type="button">Validar</button>
+   <input type="checkbox" name="semanal" id="semanal-checkbox" value="False"> Hacerlo semanal
 </form>
+
 <script>
   document.getElementById('semanal-checkbox').addEventListener('change', function() {
       if (this.checked) {
@@ -16,8 +19,68 @@
           this.value = 'False';
       }
   });
-</script>
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Busca la cookie por el nombre
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
+  $(document).ready(function () {
+      $('#btn-validar').click(function () {
+          // Evita que el formulario se envíe de manera tradicional
+          event.preventDefault();
+          var csrftoken = getCookie('csrftoken');
+
+          // Realiza cualquier lógica adicional aquí antes de enviar el formulario
+
+          // Envía el formulario usando AJAX
+          $.ajax({
+              type: 'POST',
+              url: '{% url "elegirRecorrido" %}',
+              data: $(this).serialize(),
+              beforeSend: function (xhr, settings) {
+                // Agrega el token CSRF al encabezado de la solicitud
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+              success: function (data) {
+                  console.log(data);
+                  $('#recorridos-container').empty();
+                  data.recorridos.forEach(function (recorrido) {
+                      $('#recorridos-container').append(
+                          `<input type="radio" name="recorrido" value="${recorrido.pk}">
+                            <label>${recorrido.nombre}</label><br>`
+                      );
+                  });
+              },
+              error: function (xhr, status, error) {
+                  console.error('Error al realizar la solicitud AJAX:', status, error);
+              }
+          });
+      });
+  });
+</script>
+<div id="recorridos-container"></div>
+<h1 name="duracion" value="{{ duracion }}">{{ duracion }}</h1>
+{% if recorridos %}
+    <ul>
+        {% for recorrido in recorridos %}
+            <li>
+                <input type="radio" name="recorrido" value="{{ recorrido.id }}" id="recorrido_{{ recorrido.id }}">
+                <label for="recorrido_{{ recorrido.id }}">{{ recorrido.nombre }}</label>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 <form method="post" action="{% url 'nuevoChofer' %}">
   {% csrf_token %}

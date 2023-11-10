@@ -1,0 +1,55 @@
+{% extends "base_generics.html" %}
+{% block title %}<title>viaje</title>{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Explora los Viajes</h2>
+
+    <a class="btn btn-primary" href="{% url 'crear_Viaje' %}">Crear Viaje</a>
+
+    <table class="table table-bordered table-striped">
+        <tbody>
+            {% for viaje in viajes %}
+            <tr>
+                <td>
+                    <a href="{% url 'detalle_viaje' pk=viaje.pk %}" class="black-link">
+                        {{ viaje.fecha|title }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'detalle_viaje' pk=viaje.pk %}" class="black-link">
+                        {{ viaje.fecha|title }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'detalle_viaje' pk=viaje.pk %}" class="black-link">
+                        {{ viaje.recorrido|title }}
+                    </a>
+                </td>
+                    <td>
+                        <form action="{% url 'eliminar' pk=viaje.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                        </form>
+                        <a href="{% url 'editar' pk=viaje.pk %}" class="btn btn-sm btn-info">Editar</a>
+                    </td>
+            </tr>
+
+            {% endfor %}
+        </tbody> 
+    </table>
+</div>
+<!--
+y x si lo quieren ordenar por algo les dejo el js q lo hace
+<script>
+    function limpiarYEnviar() {
+        var campoBusqueda = document.querySelector('input[name="buscar"]');
+        campoBusqueda.value = '';
+        campoBusqueda.dispatchEvent(new Event('input'));  // Simular evento de entrada
+        campoBusqueda.form.submit();
+    }
+
+</script>
+</style>
+-->
+{% endblock %}

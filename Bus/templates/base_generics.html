@@ -65,7 +65,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin/">Admin site</a>
           </li>          
-          <form method="post" action="{% url 'solosuper' %}">
+          <form method="" action="{% url 'solosuper' %}">
             {% csrf_token %}
             <li class="nav-item">
                 <button type="submit" class="nav-link active" aria-current="page">Cargar nuevos viajes</button>
@@ -77,19 +77,7 @@
                 <button type="submit" class="nav-link active" aria-current="page">Generar Reporte diario</button>
             </li>
           </form>
-          <!--
-          <form method="post" action="{% url 'cambiar_estado_bus' bus_id=123 %}"> 
-            
-            
-            DE DONDE GARCHA SACAN EL ID DEL BUS
-            
-            
-            {% csrf_token %}
-            <li class="nav-item">
-                <button type="submit" class="nav-link active" aria-current="page">Cambiar estado bus</button>
-            </li>
-          </form>
-          -->
+         
 
             {% endif %}
             {% if user.is_staff %}
