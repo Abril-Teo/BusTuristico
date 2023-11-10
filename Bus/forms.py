@@ -1,34 +1,91 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django import forms
-from .models import CambioEstado, Estado, Recorrido, Bus, Chofer, Parada, Atractivo
+from .models import *
 from django.contrib.auth.models import User
+from django.forms import widgets
+from django.utils.safestring import mark_safe
+from webcolors import hex_to_name
 
 def validate_numeric(value):
     if not value.isdigit():
         raise forms.ValidationError('Este campo solo debe contener números.')
 
+
+
 class NuevoViaje(forms.Form):
+    def get_nro_viaje_initial():
+        return Viaje.objects.count() + 1
+
     nroViaje = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
+        initial=get_nro_viaje_initial,
+    )
+    fecha = forms.DateField(
+        initial=date.today().strftime('%Y-%m-%d'),
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    fecha = forms.DateField(initial=date.today(),
+    inicioEstimado = forms.TimeField(
+        help_text="Ingresar el horario de inicio estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    inicioEstimado = forms.TimeField(help_text="Ingresar el horario de inicio estimado",
+    finalEstimado = forms.TimeField(
+        help_text="Ingresar el horario de final estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    finalEstimado = forms.TimeField(help_text="Ingresar el horario de final estimado",
+
+class MostrarRecorridos(forms.Form):
+    def get_nro_viaje_initial():
+        return Viaje.objects.count()
+    def get_lastest_fecha():
+        return Viaje.objects.last().fecha
+    def get_lastest_inicio_estimado():
+        return Viaje.objects.last().inicio_estimado
+    def get_lastest_final_estimado():
+        return Viaje.objects.last().final_estimado
+        
+    nroViaje = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
+        initial=get_nro_viaje_initial(),
+    )
+    fecha = forms.DateField(
+        initial=get_lastest_fecha(),
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    chofer = forms.ModelChoiceField(queryset=Chofer.objects.all(),
+    inicioEstimado = forms.TimeField(
+        initial=get_lastest_inicio_estimado(),
+        help_text="Ingresar el horario de inicio estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    bus = forms.ModelChoiceField(queryset=Bus.objects.filter(estado__estadoNuevo__habilitado = True),
+    finalEstimado = forms.TimeField(
+        initial=get_lastest_final_estimado(),
+        help_text="Ingresar el horario de final estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-    recorrido = forms.ModelChoiceField(queryset=Recorrido.objects.all(),
+    
+    inicio_time = Viaje.objects.last().inicio_estimado
+    final_time = Viaje.objects.last().final_estimado
+
+    # Calcula la diferencia en minutos sin tener en cuenta los segundos restantes
+    duracion_viaje = (final_time.hour - inicio_time.hour) * 60 + (final_time.minute - inicio_time.minute)
+
+
+    recorrido = forms.ModelChoiceField(
+        queryset=Recorrido.objects.filter(duracionAprox__gte=duracion_viaje),
+        help_text="",
+        widget=forms.RadioSelect(),
+        empty_label=None,
         error_messages={'required': 'Este campo es obligatorio.'}
     )
+
+    def init(self, args, **kwargs):
+        duracion = kwargs.pop('duracion', None)  # Obtiene el valor de 'duracion' pasado como parámetro
+
+        super(MostrarRecorridos, self).init(args, **kwargs)
+
+        if duracion is not None:
+            self.fields['recorrido'].queryset = Recorrido.objects.filter(duracionAprox=duracion)
+
+
     
 class NuevoChofer(forms.Form):
     nombre = forms.CharField(max_length=100)
@@ -80,7 +137,7 @@ class NuevaParada(forms.Form):
         widget=forms.CheckboxSelectMultiple,  # Puedes usar CheckboxSelectMultiple u otro widget adecuado
         required=False,  # Si no es requerido, establece esto en False
     )
-
+"""
 class NuevoCambioEstado(forms.Form):
     fechaCambio = forms.DateField(initial=datetime.today(), widget=forms.DateInput(attrs={'disabled': 'disabled'}))#si no anda cambiar a date el datetime
     estadoAnterior = forms.ModelChoiceField(queryset=Estado.objects.all())
@@ -91,4 +148,4 @@ class NuevoEstado(forms.Form):
     nombre = forms.CharField(max_length=100)
     habilitado = forms.BooleanField()
     detalles = forms.CharField(max_length=250)
-    
+""" 
