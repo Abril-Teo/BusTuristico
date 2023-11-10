@@ -31,8 +31,7 @@ class NuevoViaje(forms.Form):
         help_text="Ingresar el horario de final estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-
-class MostrarRecorridos(forms.Form):
+"""class MostrarRecorridos(forms.Form):
 
     def __init__(self, *args, **kwargs):
         viaje_id = kwargs.pop('viaje_id', None)
@@ -100,7 +99,7 @@ class MostrarRecorridos(forms.Form):
         if duracion is not None:
             self.fields['recorrido'].queryset = Recorrido.objects.filter(duracionAprox=duracion)
 
-
+"""
     
 class NuevoChofer(forms.Form):
     nombre = forms.CharField(max_length=100)

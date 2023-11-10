@@ -4,83 +4,15 @@
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<form id="calcular-duraciones-form" method="post" action="{% url 'elegirRecorrido' %}"">
-    {% csrf_token %}
-    {{ formulario.as_p }}
-    <button id="btn-validar" type="button">Validar</button>
-   <input type="checkbox" name="semanal" id="semanal-checkbox" value="False"> Hacerlo semanal
+    <form id="calcular-duraciones-form" method="post" action="{% url 'elegirRecorrido' %}"">
+        {% csrf_token %}
+        {{ formulario.as_p }}
+        <button id="btn-validar" type="button">Validar</button>
 </form>
 
-<script>
-  document.getElementById('semanal-checkbox').addEventListener('change', function() {
-      if (this.checked) {
-          this.value = 'True';
-      } else {
-          this.value = 'False';
-      }
-  });
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            // Busca la cookie por el nombre
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-  $(document).ready(function () {
-      $('#btn-validar').click(function () {
-          // Evita que el formulario se envíe de manera tradicional
-          event.preventDefault();
-          var csrftoken = getCookie('csrftoken');
-
-          // Realiza cualquier lógica adicional aquí antes de enviar el formulario
-
-          // Envía el formulario usando AJAX
-          $.ajax({
-              type: 'POST',
-              url: '{% url "elegirRecorrido" %}',
-              data: $(this).serialize(),
-              beforeSend: function (xhr, settings) {
-                // Agrega el token CSRF al encabezado de la solicitud
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            },
-              success: function (data) {
-                  console.log(data);
-                  $('#recorridos-container').empty();
-                  data.recorridos.forEach(function (recorrido) {
-                      $('#recorridos-container').append(
-                          `<input type="radio" name="recorrido" value="${recorrido.pk}">
-                            <label>${recorrido.nombre}</label><br>`
-                      );
-                  });
-              },
-              error: function (xhr, status, error) {
-                  console.error('Error al realizar la solicitud AJAX:', status, error);
-              }
-          });
-      });
-  });
-</script>
 <div id="recorridos-container"></div>
-<h1 name="duracion" value="{{ duracion }}">{{ duracion }}</h1>
-{% if recorridos %}
-    <ul>
-        {% for recorrido in recorridos %}
-            <li>
-                <input type="radio" name="recorrido" value="{{ recorrido.id }}" id="recorrido_{{ recorrido.id }}">
-                <label for="recorrido_{{ recorrido.id }}">{{ recorrido.nombre }}</label>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+<button id="btn-crear" type="submit">Crear</button>
+
 
 <form method="post" action="{% url 'nuevoChofer' %}">
   {% csrf_token %}
@@ -98,5 +30,73 @@
   {% csrf_token %}
     <button type="submit" class="nav-link active" aria-current="page">Vincular Parada Con Recorrido</button>
 </form>
+<script>
+  function obtenerInicio() {
+      return $('#id_inicioEstimado').val();
+  }
+  function obtenerFinal() {
+      return $('#id_finalEstimado').val();
+  }
+    $(document).ready(function () {
+        $('#btn-validar').click(function () {
+            // Evita que el formulario se envíe de manera tradicional
+            event.preventDefault();
+            var inicioEstimadoValue = obtenerInicio();  
+            $('#calcular-duraciones-form').append('<input type="hidden" name="inicioEstimado" value="' + inicioEstimadoValue + '">');
+            var finalEstimadoValue = obtenerFinal();  
+            $('#calcular-duraciones-form').append('<input type="hidden" name="finalEstimado" value="' + finalEstimadoValue + '">');
+  
+            // Envía el formulario usando AJAX
+            $.ajax({
+                type: 'POST',
+                url: '{% url "elegirRecorrido" %}',
+                data: $('#calcular-duraciones-form').serialize(),
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+                success: function (data) {
+                    var recorridosArray = JSON.parse(data.recorridos);
+                    $('#recorridos-container').empty();
+                    recorridosArray.forEach(function (recorrido) {
+                        $('#recorridos-container').append(
+                            `<input type="radio" name="recorrido" value="${recorrido.pk}">
+                              <label>${recorrido.fields.nombre} duracion: ${recorrido.fields.duracionAprox} minutos</label><br>`
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al realizar la solicitud AJAX:', status, error);
+                }
+            });
+        });
+    });
+
+    $('#btn-crear').on('click', function() {
+        // Obtén el valor del radio button seleccionado
+        var recorridoSeleccionado = $('input[name="recorrido"]:checked').val();
+    
+        // Verifica si se seleccionó algún radio button
+        if (recorridoSeleccionado) {
+    
+            // Realiza una solicitud AJAX al servidor
+            $.ajax({
+                url: '/bus/super/crearViaje/',  // Reemplaza '/tu-url-del-view/' con la URL correcta de tu view en Django
+                type: 'POST',
+                data: {
+                    'recorrido_seleccionado': recorridoSeleccionado,
+                    'idViaje': $('#id_nroViaje').val(),
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()  // Agrega el token CSRF
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(error) {
+                    console.error('Error en la solicitud', error);
+                }
+            });
+        } else {
+            console.log('Ningún recorrido seleccionado');
+        }
+    });
+  </script>
+
 {% endblock %}
 
