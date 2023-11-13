@@ -27,7 +27,6 @@
         <img src= "{% static '../static/images/logo.png'%}" alt="Logo" width="250" height="55">
       </a>
       {% if user.is_authenticated %}
-        
               <a class="btn btn-primary btn_sesion" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
               <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
                   {% csrf_token %}
@@ -135,10 +134,7 @@
         margin-right: -60%;
       }
       .btn_sesion{
-        margin-right: -45%;
-      }
-      .btn_contra{
-        margin-right: -60%;
+        margin-right: -120%;
       }
     }
 
@@ -147,10 +143,7 @@
         margin-right: -50%;
       }
       .btn_sesion{
-        margin-right: -30%;
-      }
-      .btn_contra{
-        margin-right: -50%;
+        margin-right: -100%;
       }
     }
 
