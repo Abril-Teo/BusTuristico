@@ -186,26 +186,7 @@ def eliminar_viaje(request, pk):
     viaje = get_object_or_404(Viaje, pk=pk)
     viaje.delete()
     return redirect('listar_viajes')
-"""class CrearViajeView(CreateView):
-    model = Viaje
-    template_name = 'crud.html'
-    form_class = NuevoViaje
-    success_url = reverse_lazy('lista_viajes')
 
-
-
-class EditarViajeView(UpdateView):
-    model = Viaje
-    template_name = 'crud_update.html'
-    form_class = NuevoViaje
-    success_url = reverse_lazy('lista_viajes')
-
-
-
-class ElimnarViajeView(DeleteView):
-    model = Viaje
-    success_url = reverse_lazy('lista_viajes')
-"""
 def newChofer(request):
     if request.method == 'POST':
         formulario = NuevoChofer(request.POST)

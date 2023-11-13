@@ -37,7 +37,16 @@ class Viaje(models.Model):
 
     
     
-    
+    @classmethod
+    def obtener_proximo_nro_viaje(cls):
+        ultimo_nro_viaje = cls.objects.order_by('-nro_viaje').first()
+
+        if ultimo_nro_viaje:
+            siguiente_nro_viaje = ultimo_nro_viaje.nro_viaje + 1
+        else:
+            siguiente_nro_viaje = 1
+
+        return siguiente_nro_viaje
 
     def CalcularDemora(self):
         return self.inicio_real - self.inicio_estimado

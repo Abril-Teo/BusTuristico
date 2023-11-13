@@ -12,13 +12,15 @@ def validate_numeric(value):
 
 
 class NuevoViaje(forms.Form):
-    def get_nro_viaje_initial():
-        return Viaje.objects.count() + 1
 
     nroViaje = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
-        initial=get_nro_viaje_initial(),
+        label='Número de Viaje', 
+        widget=forms.TextInput(attrs={'readonly': 'readonly'})
     )
+    def __init__(self, *args, **kwargs):
+        super(NuevoViaje, self).__init__(*args, **kwargs)
+        self.fields['nroViaje'].initial = Viaje.obtener_proximo_nro_viaje()
+        #BASICAMENTE CADA VEZ QUE SE RENDERIZA EL FORMULARIO SE GENERA UN NUEVO NUMERO DE VIAJE PORQUE SI LO PONGO ADENTRO DE EL CAMPO SE CREA 1 SOLA VEZ Y NO SE ACTUALIZA
     fecha = forms.DateField(
         initial=date.today().strftime('%Y-%m-%d'),
         error_messages={'required': 'Este campo es obligatorio.'}
@@ -31,79 +33,11 @@ class NuevoViaje(forms.Form):
         help_text="Ingresar el horario de final estimado",
         error_messages={'required': 'Este campo es obligatorio.'}
     )
-"""class MostrarRecorridos(forms.Form):
 
-    def __init__(self, *args, **kwargs):
-        viaje_id = kwargs.pop('viaje_id', None)
-        super(MostrarRecorridos, self).__init__(*args, **kwargs)
-        
-        if viaje_id is not None:
-            viaje = Viaje.objects.get(nro_viaje=viaje_id)
-            
-            self.fields['fecha'] = forms.DateField(
-                initial=viaje.fecha,
-                error_messages={'required': 'Este campo es obligatorio.'}
-            )
-            
-            self.fields['inicioEstimado'] = forms.TimeField(
-                initial=viaje.inicio_estimado,
-                help_text="Ingresar el horario de inicio estimado",
-                error_messages={'required': 'Este campo es obligatorio.'}
-            )
-            
-            self.fields['finalEstimado'] = forms.TimeField(
-                initial=viaje.final_estimado,
-                help_text="Ingresar el horario de final estimado",
-                error_messages={'required': 'Este campo es obligatorio.'}
-            )
-       
-    nroViaje = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'readonly': 'readonly'}),
-        #initial=get_nro_viaje_initial(),
-    )
-    fecha = forms.DateField(
-        #initial=Viaje.objects.get(nro_viaje = viaje_id).fecha,
-        error_messages={'required': 'Este campo es obligatorio.'}
-    )
-    inicioEstimado = forms.TimeField(
-        #initial=get_lastest_inicio_estimado(),
-        help_text="Ingresar el horario de inicio estimado",
-        error_messages={'required': 'Este campo es obligatorio.'}
-    )
-    finalEstimado = forms.TimeField(
-      #  initial=get_lastest_final_estimado(),
-        help_text="Ingresar el horario de final estimado",
-        error_messages={'required': 'Este campo es obligatorio.'}
-    )
-    
-    inicio_time = Viaje.objects.last().inicio_estimado
-    final_time = Viaje.objects.last().final_estimado
-
-    # Calcula la diferencia en minutos sin tener en cuenta los segundos restantes
-    duracion_viaje = (final_time.hour - inicio_time.hour) * 60 + (final_time.minute - inicio_time.minute)
-
-
-    recorrido = forms.ModelChoiceField(
-        queryset=Recorrido.objects.filter(duracionAprox__gte=duracion_viaje),
-        help_text="",
-        widget=forms.RadioSelect(),
-        empty_label=None,
-        error_messages={'required': 'Este campo es obligatorio.'}
-    )
-
-    def init(self, args, **kwargs):
-        duracion = kwargs.pop('duracion', None)  # Obtiene el valor de 'duracion' pasado como parámetro
-
-        super(MostrarRecorridos, self).init(args, **kwargs)
-
-        if duracion is not None:
-            self.fields['recorrido'].queryset = Recorrido.objects.filter(duracionAprox=duracion)
-
-"""
 class ViajeForm(forms.ModelForm):
     class Meta:
         model = Viaje
-        fields = ['nro_viaje', 'fecha', 'inicio_real', 'final_real', 'inicio_estimado', 'final_estimado', 'chofer', 'bus', 'recorrido']
+        fields = ['nro_viaje', 'fecha', 'inicio_estimado', 'final_estimado', 'chofer', 'bus', 'recorrido']
     
 class NuevoChofer(forms.Form):
     nombre = forms.CharField(max_length=100)

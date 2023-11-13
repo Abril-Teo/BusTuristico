@@ -3,3 +3,5 @@
 - hacer mas lindo los pdf(timo)
 - cambiar contraseña ()
 - CRUD de viaje (hecho)
+- anda mal el autoasignador en el cambiar viaje
+- ver permisos de quien puede crear un viaje distinto del admin
