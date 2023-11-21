@@ -206,13 +206,16 @@
                   id="path8286-3" /></g></g>
                 </svg>
               </button>
+              <h3>Recorrido: {{recorrido.nombre}}</h3>
+              <p>Inicio: {{recorrido.horaInicioAprox}}
+                <br>Fin: {{recorrido.horaFinalizacionAprox}}
+              </p>
             </div>
             <style>
-                /* Estilos personalizados para eliminar los estilos de botón de Bootstrap */
                 .svg-link {
-                    text-decoration: none; /* Elimina el subrayado */
-                    color: inherit; /* Usa el color por defecto del texto */
-                    display: inline-block; /* Alinea el enlace y el SVG en línea */
+                    text-decoration: none;
+                    color: inherit;
+                    display: inline-block;
                 }
             </style>
           {% endfor %}

@@ -409,6 +409,8 @@ def GenerarReportes(request):
 
             return response
         return HttpResponse("No hay viajes en el dia")
+    else:
+        return HttpResponse("No hay viajes en el dia")
 
 
 @login_required
