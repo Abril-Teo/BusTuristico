@@ -158,7 +158,7 @@ def MostrarRecorridos(request):
     duracion_en_minutos = duracion_seleccionada.total_seconds() / 60
     print(duracion_en_minutos)
     if duracion_seleccionada:
-        recorridos_filtrados = Recorrido.objects.filter(duracionAprox=duracion_en_minutos)
+        recorridos_filtrados = Recorrido.objects.filter(duracionAprox__gte = duracion_en_minutos)
         serialized_recorridos = serialize('json', recorridos_filtrados)
         return JsonResponse({'recorridos': serialized_recorridos})
     else:
