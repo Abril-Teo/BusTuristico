@@ -1,0 +1,55 @@
+{% extends "base_generics.html" %}
+{% block title %}<title>viaje</title>{% endblock %}
+
+{% block content %}
+<ul>
+    <li><strong>nro_viaje:</strong> {{ viaje.nro_viaje }}</li>
+    <li><strong>Inicio estimado:</strong> {{ viaje.inicio_estimado }}</li>
+    <li><strong>Final estimado:</strong> {{ viaje.final_estimado }}</li>
+
+    <body>
+        <h1>Editar Viaje</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    {% if viaje.inicio_real == null %}
+                        <form method="post" action="{% url 'actualizarinicio'%}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ viaje.id }}">
+                            <button type="submit" class="btn btn-primary btn_viaje">EMPEZAR VIAJE</button>
+                        </form>
+                    {% else %}
+                    <li><strong>El viaje Inicio a las:</strong> {{ viaje.inicio_real }}</li>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {% if viaje.final_real == null %}
+                        <form method="post" action="{% url 'actualizarfinal'%}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ viaje.id }}">
+                            <button type="submit" class="btn btn-primary btn_viaje">FINALIZAR VIAJE</button>
+                        </form>
+                    {% else %}
+                        <li><strong>El viaje finalizo a las:</strong> {{ viaje.final_real }}</li>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <br>
+        <a href="{% url 'staffonly'%}">Volver al detalle del viaje</a>
+        {% if viaje.final_real != null and viaje.inicio_real != null %}
+        <form method="post" action="{% url 'EmitirTicket'%}">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ viaje.id }}">
+            <button type="submit" class="button">Generar PDF</button>
+        </form>
+        {% endif %}
+    </body>
+</ul>
+<style>
+    .btn_viaje{
+        width: 100%;
+        height: 400px;
+    }
+</style>
+{% endblock %}

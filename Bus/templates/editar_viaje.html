@@ -1,0 +1,11 @@
+{% extends 'base_generics.html' %}
+
+{% block content %}
+<h1>Editar Viaje #{{ viaje.nro_viaje }}</h1>
+    <form method="post" action="{% url 'editar_viaje' pk=viaje.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Cambios</button>
+    </form>
+    <a href="{% url 'listar_viajes' %}">Volver al Listado</a>
+{% endblock %}

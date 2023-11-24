@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+{% load static %}
+
+
+<!-- Font Awesome -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<!-- MDB -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css"
+  rel="stylesheet"
+/>
+
+
+<head>
+  <title>Bus Turistico</title>
+  <link rel="icon" href="../static/images/busturistico-logo.ico">
+  <nav class="navbar bg-body-tertiary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href='/'>
+        <img src= "{% static '../static/images/logo.png'%}" alt="Logo" width="250" height="55">
+      </a>
+      {% if user.is_authenticated %}
+              <a class="btn btn-primary btn_sesion" href="#" id="cerrar-sesion-link">Cerrar Sesión</a>
+              <form id="cerrar-sesion-form" action="{% url 'cerrar_sesion' %}" method="post">
+                  {% csrf_token %}
+              </form>
+          <script>
+            document.getElementById('cerrar-sesion-link').addEventListener('click', function(e) {
+                e.preventDefault();  
+                document.getElementById('cerrar-sesion-form').submit();  
+            });
+          </script>
+            {% else %}
+              <a class="btn btn_iniciar btn-primary" href="/bus/accounts/vista_login/">Iniciar sesion</a>
+              
+            {% endif %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/bus/Recorridos">Recorridos</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'cambiar_contraseña' %}">Cambiar Contraseña</a>
+          </li>
+          {% endif %}
+            {% if user.is_superuser %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/">Admin site</a>
+          </li>          
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'listar_viajes' %}">Ver los viajes</a>
+        </li>
+          <form method="post" action="{% url 'generarReporte' %}">
+            {% csrf_token %}
+            <li class="nav-item">
+                <button type="submit" class="nav-link active" aria-current="page">Generar Reporte diario</button>
+            </li>
+          </form>
+         
+
+            {% endif %}
+            {% if user.is_staff %}
+              <form method="post" action="{% url 'staffonly' %}">
+                {% csrf_token %}
+                <li class="nav-item">
+                    <button type="submit" class="nav-link active" aria-current="page">Cargar tiempos viajes</button>
+                </li>
+            </form>
+          {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  {% load static %}
+  <style>
+    body{
+      margin-top: 100px;
+      background-color: aliceblue;
+      margin-bottom: 170px;
+
+      justify-content: center;
+    }
+    .botonParada{
+      fill:#ff0000;
+      stroke:none;
+      stroke-width:5.40018;
+      stroke-opacity:1;
+      paint-order:markers stroke fill
+    }
+    .botonParada:hover{
+        fill: antiquewhite;
+    }
+    .paradas-container {
+      display: inline-block;
+      margin: 0px; 
+      text-align: center; 
+    }
+
+    .paradas-container p {
+      font-weight: bold;
+      font-size: 30px;
+      margin-top: 0px;
+    }
+    .divisor-primary {
+      border: 2px solid #df1a25;
+	    width: 12.5%;
+      margin: 0 auto;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    @media (max-width: 7000px){
+      .btn_iniciar{
+        margin-right: -60%;
+      }
+      .btn_sesion{
+        margin-right: -120%;
+      }
+    }
+
+    @media (max-width: 1279px){
+      .btn_iniciar{
+        margin-right: -50%;
+      }
+      .btn_sesion{
+        margin-right: -100%;
+      }
+    }
+
+</style>
+</head>
+
+<body class="-webkit-scrollbar">
+
+  <div class="container-fluid">
+
+    <div class="col-sm-10 ">
+    {% block content %}
+    {% endblock %}
+    </div>
+
+  </div>
+  <div class="container my-5">
+
+    <footer class="bg-light text-center text-white fixed-bottom"">
+    <div class="container p-4 pb-0">
+      <section class="mb-4">
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #3b5998;"
+          href="#!"
+          role="button"
+          ><i class="fab fa-facebook-f"></i>
+        </a>
+  
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #55acee;"
+          href="#!"
+          role="button"
+          ><i class="fab fa-twitter"></i
+        ></a>
+  
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #dd4b39;"
+          href="#!"
+          role="button"
+          ><i class="fab fa-google"></i
+        ></a>
+  
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #ac2bac;"
+          href="#!"
+          role="button"
+          ><i class="fab fa-instagram"></i
+        ></a>
+  
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #0082ca;"
+          href="#!"
+          role="button"
+          ><i class="fab fa-linkedin-in"></i
+        ></a>
+        <a
+          class="btn btn-primary btn-floating m-1"
+          style="background-color: #333333;"
+          href="https://github.com/Abril-Teo/BusTuristico"
+          role="button"
+          ><i class="fab fa-github"></i
+        ></a>
+      </section>
+    </div>
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      © 2023 Copyright:
+      <a class="text-white" >Grupo2</a>
+    </div>
+  </footer>
+  </div>
+</body>
+</html>

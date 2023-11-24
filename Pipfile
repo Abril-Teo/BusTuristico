@@ -5,6 +5,14 @@ name = "pypi"
 
 [packages]
 django = "*"
+django-colorfield = "*"
+django-star-ratings = "*"
+reportlab = "*"
+weasyprint = "*"
+jinja2 = "*"
+pdfkit = "*"
+wkhtmltopdf = "*"
+django-wkhtmltopdf = "*"
 
 [dev-packages]
 

@@ -1,0 +1,109 @@
+
+{% extends 'base_generics.html' %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <form id="calcular-duraciones-form" method="post" action="{% url 'elegirRecorrido' %}"">
+        {% csrf_token %}
+        {{ formulario.as_p }}
+        <button id="btn-validar" type="button">Validar</button>
+</form>
+
+<div id="recorridos-container"></div>
+<button id="btn-crear" type="submit">Crear</button>
+
+
+<form method="post" action="{% url 'nuevoChofer' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo chofer</button>
+</form>
+<form method="post" action="{% url 'nuevoBus' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo colectivo</button>
+</form>
+<form method="post" action="{% url 'nuevoRecorrido' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Cargar nuevo Recorrido</button>
+</form>
+<form method="post" action="{% url 'nuevaParadaXRecorrido' %}">
+  {% csrf_token %}
+    <button type="submit" class="nav-link active" aria-current="page">Vincular Parada Con Recorrido</button>
+</form>
+<script>
+  function obtenerInicio() {
+      return $('#id_inicioEstimado').val();
+  }
+  function obtenerFinal() {
+      return $('#id_finalEstimado').val();
+  }
+    $(document).ready(function () {
+        $('#btn-validar').click(function () {
+            // Evita que el formulario se envíe de manera tradicional
+            event.preventDefault();
+            var inicioEstimadoValue = obtenerInicio();  
+            $('#calcular-duraciones-form').append('<input type="hidden" name="inicioEstimado" value="' + inicioEstimadoValue + '">');
+            var finalEstimadoValue = obtenerFinal();  
+            $('#calcular-duraciones-form').append('<input type="hidden" name="finalEstimado" value="' + finalEstimadoValue + '">');
+            
+            var boton = document.getElementById("btn-validar");
+            boton.style.display = "none";
+  
+            // Envía el formulario usando AJAX
+            $.ajax({
+                type: 'POST',
+                url: '{% url "elegirRecorrido" %}',
+                data: $('#calcular-duraciones-form').serialize(),
+                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+                success: function (data) {
+                    var recorridosArray = JSON.parse(data.recorridos);
+                    $('#recorridos-container').empty();
+                    $('#recorridos-container').append(
+                        `<label for="recorrido">Seleccione un recorrido:</label><br>`);
+                    recorridosArray.forEach(function (recorrido) {
+                        $('#recorridos-container').append(
+                            `<input type="radio" name="recorrido" value="${recorrido.pk}">
+                              <label>${recorrido.fields.nombre} duracion: ${recorrido.fields.duracionAprox} minutos</label><br>`
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al realizar la solicitud AJAX:', status, error);
+                }
+            });
+        });
+    });
+
+    $('#btn-crear').on('click', function() {
+        // Obtén el valor del radio button seleccionado
+        var recorridoSeleccionado = $('input[name="recorrido"]:checked').val();
+    
+        // Verifica si se seleccionó algún radio button
+        if (recorridoSeleccionado) {
+    
+            // Realiza una solicitud AJAX al servidor
+            $.ajax({
+                url: '/bus/super/crearViaje/',  // Reemplaza '/tu-url-del-view/' con la URL correcta de tu view en Django
+                type: 'POST',
+                data: {
+                    'recorrido_seleccionado': recorridoSeleccionado,
+                    'idViaje': $('#id_nroViaje').val(),
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()  // Agrega el token CSRF
+                },
+                success: function(response) {
+                    var nuevaURL = "{% url 'listar_viajes' %}";
+                    window.location.href = nuevaURL;
+                    
+                },
+                error: function(error) {
+                    console.error('Error en la solicitud', error);
+                }
+            });
+        } else {
+            console.log('Ningún recorrido seleccionado');
+        }
+    });
+  </script>
+
+{% endblock %}
+

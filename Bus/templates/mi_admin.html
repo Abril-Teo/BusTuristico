@@ -1,0 +1,32 @@
+{% extends "base_generics.html" %}
+{%load static%}
+
+{%block content%}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Contenido de la primera columna -->
+            <h3>Carga</h3>
+            <br><br>
+            <a href="">Choferes</a>
+            <hr style="border-color: black;"/>
+            <a href="">Colectivos</a>
+            <hr style="border-color: black;"/>
+            <a href="">Recorridos</a>
+            <hr style="border-color: black;"/>
+            <a href="">Paradas</a>
+            <hr style="border-color: black;"/>
+        </div>
+        <div class="col-md-6">
+            <!-- Contenido de la segunda columna -->
+            <h2>Objetos dependiendo de la url</h2>
+
+        </div>
+        <div class="col-md-3">
+            <!-- Contenido de la tercera columna -->
+            <h2>Columna 3</h2>
+            <p>Contenido de la tercera columna...</p>
+        </div>
+    </div>
+</div>
+{%endblock%}
