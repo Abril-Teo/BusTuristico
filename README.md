@@ -1,5 +1,8 @@
 # BusTuristico
-
+Es un proyecto django creado por integrantes de un grupo del instituto tecnico salesiano villada para un bus turistico de Buenos Aires, que tiene las siguientes funcionalidades:
+- visualizacion de recorridos, atractivos y paradas del lado del usuario
+- creacion de viajes, reportes diarios del lado del administrador, ademas de poder llevar un registro de los colectivos habilitados y los choferes que esta activos
+- carga de tiempo de viajes de los chofferes y generacion de tickets
 
 <details>
 <summary>Diagrama de Clases UML</summary>
